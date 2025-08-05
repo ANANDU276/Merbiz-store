@@ -5,16 +5,20 @@ const productRoutes = require("./routes/products");
 const authRoutes = require("./routes/auth");
 const wishlistRoutes = require("./routes/wishlist");
 const userRoutes = require("./routes/user");
-const orderRoutes = require('./routes/order');
+const orderRoutes = require("./routes/order");
 const paymentRoutes = require("./routes/payment");
-const addresses = require('./routes/address');
+const addresses = require("./routes/address");
 
 require("dotenv").config();
 
 const app = express();
 
 // ✅ Custom CORS middleware
-const allowedOrigins = ["http://localhost:5173", "http://localhost:5174"];
+const allowedOrigins = [
+  "http://localhost:5173",
+  "http://localhost:5174",
+  "https://merbiz-store.onrender.com",
+];
 app.use((req, res, next) => {
   const origin = req.headers.origin;
   if (allowedOrigins.includes(origin)) {
@@ -51,7 +55,7 @@ app.use("/api/wishlist", wishlistRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/order", orderRoutes);
 app.use("/api/payment", paymentRoutes);
-app.use('/api/addresses', addresses);
+app.use("/api/addresses", addresses);
 
 // ✅ Start Server
 // const PORT = 5000;
