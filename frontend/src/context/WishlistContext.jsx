@@ -6,6 +6,7 @@ const WishlistContext = createContext();
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
+
 export const WishlistProvider = ({ children }) => {
   const { user } = useContext(AuthContext);
   const [wishlist, setWishlist] = useState(() => {

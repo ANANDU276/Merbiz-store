@@ -1,7 +1,6 @@
 import React, { useContext } from "react";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
-import { FiArrowRight } from "react-icons/fi";
 import iphone16 from "../../assets/iphone16.png";
 import controller from "../../assets/controller.png";
 import headphones from "../../assets/headphones.png";
@@ -17,250 +16,162 @@ function Hero() {
       opacity: 1,
       transition: {
         staggerChildren: 0.1,
-        delayChildren: 0.3,
-      },
-    },
+        delayChildren: 0.2
+      }
+    }
   };
 
   const itemVariants = {
-    hidden: { y: 30, opacity: 0 },
+    hidden: { y: 20, opacity: 0 },
     visible: {
       y: 0,
       opacity: 1,
       transition: {
-        type: "spring",
-        stiffness: 100,
-        damping: 10,
-      },
-    },
+        duration: 0.5
+      }
+    }
   };
 
   return (
-    <section className="relative overflow-hidden">
-      {/* Background gradient */}
-      <div className="absolute inset-0 bg-gradient-to-br from-gray-50 to-gray-100 -z-10"></div>
-
-      {/* Main container */}
-      <div className="l mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
-        <motion.div
-          className="grid grid-cols-1 lg:grid-cols-2 gap-8"
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible"
+    <main className="mx-auto px-4 py-12">
+      <motion.div 
+        className="w-full flex flex-col lg:flex-row gap-6"
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+      >
+        {/* Main Featured Product - Left Column */}
+        <motion.div 
+          className="w-full lg:w-1/2"
+          variants={itemVariants}
         >
-          {/* Left column - Featured product */}
-          <motion.div
-            className="flex flex-col justify-center"
-            variants={itemVariants}
-          >
-            <div className="mb-8">
-              <span className="inline-block px-4 py-1.5 bg-blue-100 text-blue-800 text-sm font-medium rounded-full mb-4">
-                New Arrivals
+          <div className="bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-8 flex flex-col lg:flex-row items-center gap-8 h-full shadow-sm hover:shadow-md transition-shadow">
+            <div className="flex-1">
+              <span className="inline-block px-3 py-1 bg-green-100 text-green-800 text-xs font-semibold rounded-full mb-3">
+                IN STOCK NOW
               </span>
-              <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold text-gray-900 leading-tight mb-4">
-                Elevate Your <span className="text-blue-600">Digital Life</span>
+              <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4 leading-tight">
+                Upgrade Your <span className="text-blue-600">Tech Game</span>
               </h1>
-              <p className="text-lg text-gray-600 mb-8 max-w-lg">
-                Discover cutting-edge technology designed to enhance your
-                everyday experiences with premium quality and innovative
-                features.
+              <p className="text-gray-600 mb-6 text-lg">
+                Discover the latest smartphones with cutting-edge technology and premium designs.
               </p>
-              <div className="flex flex-wrap gap-4">
-                <Link
-                  to="/phones"
-                  onClick={() => setSelectedCategory("Phones")}
-                  className="flex items-center px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-all shadow-lg hover:shadow-xl"
-                >
-                  Shop Now <FiArrowRight className="ml-2" />
-                </Link>
-                <Link
-                  to="/products"
-                  className="flex items-center px-6 py-3 bg-white text-gray-800 font-medium rounded-lg hover:bg-gray-50 transition-all border border-gray-200"
-                >
-                  Browse All
-                </Link>
-              </div>
+              <Link
+                to="/phones"
+                onClick={() => setSelectedCategory("Phones")}
+                className="inline-flex items-center px-6 py-3 bg-blue-600 text-white font-medium rounded-lg hover:bg-blue-700 transition-colors shadow-md"
+              >
+                Shop Now
+                <svg className="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
+                </svg>
+              </Link>
             </div>
-
-            {/* Stats */}
-            <div className="grid grid-cols-3 gap-4 mt-8 max-w-md">
-              {[
-                { value: "10K+", label: "Products" },
-                { value: "2M+", label: "Customers" },
-                { value: "24/7", label: "Support" },
-              ].map((stat, index) => (
-                <motion.div
-                  key={index}
-                  className="bg-white p-4 rounded-xl shadow-sm hover:shadow-md transition-shadow"
-                  whileHover={{ y: -5 }}
-                >
-                  <p className="text-2xl font-bold text-gray-900">
-                    {stat.value}
-                  </p>
-                  <p className="text-sm text-gray-500">{stat.label}</p>
-                </motion.div>
-              ))}
+            <div className="relative w-full max-w-md">
+              <div className="absolute -inset-2 bg-blue-200 rounded-full blur opacity-20"></div>
+              <img
+                src={iphone16}
+                alt="Premium Smartphone"
+                className="relative w-full object-contain transform hover:scale-105 transition-transform"
+              />
             </div>
-          </motion.div>
+          </div>
+        </motion.div>
 
-          {/* Right column - Product showcase */}
-          <motion.div className="relative" variants={itemVariants}>
-            <div className="absolute -right-20 -top-20 w-64 h-64 bg-blue-200 rounded-full filter blur-3xl opacity-20"></div>
-            <div className="relative bg-white rounded-2xl overflow-hidden h-full min-h-[500px] flex flex-col lg:flex-row items-center p-8">
-              {/* Text content - left side */}
-              <div className="lg:w-1/2 flex flex-col justify-center p-6 lg:p-8 order-2 lg:order-1">
-                <span className="inline-block px-3 py-1 bg-blue-100 text-blue-800 text-xs font-semibold rounded-full mb-4">
-                  NEW RELEASE
-                </span>
-                <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-3">
-                  iPhone 16 Pro
-                </h2>
-                <p className="text-lg text-gray-600 mb-6">
-                  The ultimate iPhone experience with our most advanced camera
-                  system, A18 Pro chip, and revolutionary durability.
-                </p>
-                <div className="space-y-2 mb-8">
-                  <div className="flex items-center">
-                    <div className="w-2 h-2 bg-blue-500 rounded-full mr-2"></div>
-                    <span className="text-gray-700">
-                      6.7" Super Retina XDR display
-                    </span>
-                  </div>
-                  <div className="flex items-center">
-                    <div className="w-2 h-2 bg-blue-500 rounded-full mr-2"></div>
-                    <span className="text-gray-700">
-                      Pro camera system with 5x zoom
-                    </span>
-                  </div>
-                  <div className="flex items-center">
-                    <div className="w-2 h-2 bg-blue-500 rounded-full mr-2"></div>
-                    <span className="text-gray-700">All-day battery life</span>
-                  </div>
-                </div>
-                <div className="flex flex-col sm:flex-row gap-4">
-                  <Link
-                    to="/product/iphone-16-pro"
-                    className="px-6 py-3 bg-blue-600 text-white font-medium rounded-lg text-center"
-                  >
-                    Buy Now
-                  </Link>
-                  <Link
-                    to="/phones"
-                    className="px-6 py-3 bg-white text-gray-800 font-medium rounded-lg border border-gray-200 text-center"
-                  >
-                    View All Phones
-                  </Link>
-                </div>
-              </div>
+        {/* Secondary Products - Right Column */}
+        <motion.div 
+          className="w-full lg:w-1/2 flex flex-col gap-6"
+          variants={itemVariants}
+        >
+          {/* Gaming Card */}
+          <Link
+            onClick={() => setSelectedCategory("electronics")}
+            to="/productpage"
+            className="relative bg-gradient-to-br from-purple-50 to-blue-50 rounded-xl p-6 flex flex-col justify-between hover:shadow-lg transition-all h-full overflow-hidden group"
+          >
+            <div className="absolute top-0 right-0 w-32 h-32 bg-purple-200 rounded-full filter blur-3xl opacity-20"></div>
+            <span className="inline-block px-3 py-1 bg-white text-gray-900 text-xs font-semibold rounded-full mb-4 z-10">
+              GAMING
+            </span>
+            <div className="flex justify-center z-10">
+              <motion.img
+                src={controller}
+                alt="Gaming Controller"
+                className="w-full max-w-[250px] object-contain transform group-hover:scale-110 transition-transform"
+                whileHover={{ scale: 1.05 }}
+              />
+            </div>
+            <div className="z-10">
+              <h3 className="text-xl font-semibold text-gray-900 mt-4">
+                Ultimate Gaming Experience
+              </h3>
+              <p className="text-gray-600 mt-2 text-sm">
+                High-performance gear for serious gamers
+              </p>
+            </div>
+          </Link>
 
-              {/* Image - right side */}
-              <div className="lg:w-1/2 flex items-center justify-center order-1 lg:order-2">
+          {/* Headphones + Smartwatches Grid */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            {/* Headphones Card */}
+            <Link
+              onClick={() => setSelectedCategory("Headphones")}
+              to="/productpage"
+              className="relative bg-gradient-to-br from-orange-50 to-amber-50 rounded-xl p-6 flex flex-col justify-between hover:shadow-lg transition-all h-full overflow-hidden group"
+            >
+              <div className="absolute top-0 right-0 w-24 h-24 bg-orange-200 rounded-full filter blur-3xl opacity-20"></div>
+              <span className="inline-block px-3 py-1 bg-white text-gray-900 text-xs font-semibold rounded-full mb-4 z-10">
+                HEADPHONES
+              </span>
+              <div className="flex justify-center z-10">
                 <motion.img
-                  src={iphone16}
-                  alt="iPhone 16 Pro"
-                  className="w-full max-w-md object-contain"
+                  src={headphones}
+                  alt="Premium Headphones"
+                  className="w-full max-w-[120px] object-contain transform group-hover:scale-110 transition-transform"
                   whileHover={{ scale: 1.05 }}
-                  transition={{ duration: 0.3 }}
                 />
               </div>
-            </div>
-          </motion.div>
-        </motion.div>
-
-        {/* Category cards */}
-        <motion.div
-          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mt-12"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
-        >
-          {[
-            {
-              id: 1,
-              title: "Gaming Gear",
-              description: "High-performance equipment",
-              image: controller,
-              category: "Gaming Gear",
-              bgColor: "bg-purple-50",
-              accentColor: "bg-purple-200",
-              gradient: "from-purple-50/0 to-purple-50/100",
-            },
-            {
-              id: 2,
-              title: "Audio",
-              description: "Immersive sound experience",
-              image: headphones,
-              category: "Headphones",
-              bgColor: "bg-blue-50",
-              accentColor: "bg-blue-200",
-              gradient: "from-blue-50/0 to-blue-50/100",
-            },
-            {
-              id: 3,
-              title: "Wearables",
-              description: "Tech for your lifestyle",
-              image: watch,
-              category: "watch",
-              bgColor: "bg-pink-50",
-              accentColor: "bg-pink-200",
-              gradient: "from-pink-50/0 to-pink-50/100",
-            },
-            {
-              id: 4,
-              title: "Speakers",
-              description: "Complete your setup",
-              image: headphones,
-              category: "speaker",
-              bgColor: "bg-green-50",
-              accentColor: "bg-green-200",
-              gradient: "from-green-50/0 to-green-50/100",
-            },
-          ].map((item) => (
-            <Link
-              key={item.id}
-              to="/productpage"
-              onClick={() => setSelectedCategory(item.category)}
-              className={`relative rounded-xl p-6 h-full overflow-hidden`}
-            >
-              {/* Background with opacity gradient */}
-              <div
-                className={`absolute inset-0 bg-gradient-to-t ${item.gradient}`}
-              ></div>
-
-              {/* Color accent circle */}
-              <div
-                className={`absolute -right-10 -top-10 w-32 h-32 ${item.accentColor} rounded-full filter blur-3xl opacity-30`}
-              ></div>
-
-              <div className="relative z-10 flex h-full">
-                {/* Text Content - 50% width */}
-                <div className="w-1/2 pr-4 flex flex-col justify-between">
-                  <div>
-                    <h3 className={"text-xl font-semibold"}>
-                      {item.title}
-                    </h3>
-                    <p className="text-gray-600 mt-1 text-sm">
-                      {item.description}
-                    </p>
-                  </div>
-                </div>
-
-                {/* Image - 50% width */}
-                <div className="w-1/2 flex items-center justify-center">
-                  <motion.img
-                    src={item.image}
-                    alt={item.title}
-                    className="h-full max-h-40 w-auto object-contain"
-                    whileHover={{ scale: 1.1 }}
-                    transition={{ duration: 0.2 }}
-                  />
-                </div>
+              <div className="z-10">
+                <h3 className="text-lg font-semibold text-gray-900 mt-4">
+                  Crystal Clear Sound
+                </h3>
+                <p className="text-gray-600 mt-2 text-sm">
+                  Immerse yourself in music
+                </p>
               </div>
             </Link>
-          ))}
+
+            {/* Smartwatch Card */}
+            <Link
+              onClick={() => setSelectedCategory("Headphones")}
+              to="/productpage"
+              className="relative bg-gradient-to-br from-amber-50 to-yellow-50 rounded-xl p-6 flex flex-col justify-between hover:shadow-lg transition-all h-full overflow-hidden group"
+            >
+              <div className="absolute top-0 right-0 w-24 h-24 bg-amber-200 rounded-full filter blur-3xl opacity-20"></div>
+              <span className="inline-block px-3 py-1 bg-white text-gray-900 text-xs font-semibold rounded-full mb-4 z-10">
+                SMART WATCHES
+              </span>
+              <div className="flex justify-center z-10">
+                <motion.img
+                  src={watch}
+                  alt="Smart Watch"
+                  className="w-full max-w-[120px] object-contain transform group-hover:scale-110 transition-transform"
+                  whileHover={{ scale: 1.05 }}
+                />
+              </div>
+              <div className="z-10">
+                <h3 className="text-lg font-semibold text-gray-900 mt-4">
+                  Stay Connected
+                </h3>
+                <p className="text-gray-600 mt-2 text-sm">
+                  Tech that fits your wrist
+                </p>
+              </div>
+            </Link>
+          </div>
         </motion.div>
-      </div>
-    </section>
+      </motion.div>
+    </main>
   );
 }
 

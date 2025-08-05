@@ -3,45 +3,41 @@ import axios from "axios";
 import AuthContext from "./AuthContext";
 
 const CartContext = createContext();
+
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
+
 export const CartProvider = ({ children }) => {
-  const { user, loading: authLoading } = useContext(AuthContext);
+  const { user } = useContext(AuthContext);
+  const [cart, setCart] = useState(() => {
+    const storedCart = localStorage.getItem("cart");
+    return storedCart ? JSON.parse(storedCart) : [];
+  });
+
   const userId = user?.id;
 
-  const [cart, setCart] = useState([]);
-
-  // Load cart from localStorage on init (before user is known)
-  useEffect(() => {
-    const storedCart = localStorage.getItem("cart");
-    if (storedCart) {
-      setCart(JSON.parse(storedCart));
-      console.log("🗃️ Loaded cart from localStorage");
-    }
-  }, []);
-
-  // Sync local cart to localStorage on every change
+  // Sync cart to localStorage
   useEffect(() => {
     localStorage.setItem("cart", JSON.stringify(cart));
-    console.log("💾 Cart updated in localStorage:", cart);
+    console.log("Cart updated in localStorage:", cart);
   }, [cart]);
 
-  // Fetch cart from server once user is available and AuthContext is ready
+  // Fetch cart when user logs in
   useEffect(() => {
-    if (!authLoading && userId) {
-      console.log("🔑 User logged in, fetching server cart:", userId);
+    if (userId) {
+      console.log("User ID set in CartContext:", userId);
       fetchCartFromServer(userId);
     }
-  }, [authLoading, userId]);
+  }, [userId]);
 
-  // Clear cart on logout
+  // Clear cart when user logs out
   useEffect(() => {
-    if (!userId && !authLoading) {
-      console.log("🚪 User logged out, clearing cart");
+    if (!userId) {
+      console.log("User logged out, clearing cart...");
       setCart([]);
       localStorage.removeItem("cart");
     }
-  }, [userId, authLoading]);
+  }, [userId]);
 
   const addToCart = (product) => {
     setCart((prevCart) => {
@@ -57,16 +53,16 @@ export const CartProvider = ({ children }) => {
 
     if (userId) {
       axios
-        .post(`${API_BASE_URL}/cart`, {
+        .post(`${API_BASE_URL}`, {
           userId,
           product: {
             productId: product._id,
             quantity: 1,
           },
         })
-        .then(() => console.log("🛒 addToCart synced to server"))
+        .then(() => console.log("Synced addToCart to server"))
         .catch((err) =>
-          console.error("❌ addToCart sync failed:", err.response?.data || err.message)
+          console.error("addToCart sync failed:", err.response?.data || err.message)
         );
     }
   };
@@ -77,9 +73,9 @@ export const CartProvider = ({ children }) => {
     if (userId) {
       axios
         .delete(`${API_BASE_URL}/cart/${userId}/${id}`)
-        .then(() => console.log("🗑️ removeFromCart synced to server"))
+        .then(() => console.log("Synced removeFromCart to server"))
         .catch((err) =>
-          console.error("❌ removeFromCart sync failed:", err.response?.data || err.message)
+          console.error("removeFromCart sync failed:", err.response?.data || err.message)
         );
     }
   };
@@ -93,16 +89,16 @@ export const CartProvider = ({ children }) => {
 
     if (userId) {
       axios
-        .post(`${API_BASE_URL}/cart`, {
+        .post(`${API_BASE_URL}`, {
           userId,
           product: {
             productId: id,
             quantity: 1,
           },
         })
-        .then(() => console.log("➕ increaseQuantity synced to server"))
+        .then(() => console.log("Synced increaseQuantity to server"))
         .catch((err) =>
-          console.error("❌ increaseQuantity sync failed:", err.response?.data || err.message)
+          console.error("increaseQuantity sync failed:", err.response?.data || err.message)
         );
     }
   };
@@ -122,22 +118,27 @@ export const CartProvider = ({ children }) => {
 
       if (userId) {
         axios
-          .post(`${API_BASE_URL}/cart`, {
+          .post(`${API_BASE_URL}`, {
             userId,
             product: {
               productId: id,
               quantity: -1,
             },
           })
-          .then(() => console.log("➖ decreaseQuantity synced to server"))
+          .then(() => console.log("Synced decreaseQuantity to server"))
           .catch((err) =>
-            console.error("❌ decreaseQuantity sync failed:", err.response?.data || err.message)
+            console.error("decreaseQuantity sync failed:", err.response?.data || err.message)
           );
       }
     }
   };
 
   const fetchCartFromServer = async (uid) => {
+    if (!uid) {
+      console.warn("No userId provided to fetchCartFromServer");
+      return;
+    }
+
     try {
       const res = await axios.get(`${API_BASE_URL}/cart/${uid}`);
       const serverCart = res.data?.items || [];
@@ -148,10 +149,9 @@ export const CartProvider = ({ children }) => {
       }));
 
       setCart(formatted);
-      localStorage.setItem("cart", JSON.stringify(formatted));
-      console.log("📥 Cart fetched from server:", formatted);
+      console.log("Cart fetched and loaded:", formatted);
     } catch (err) {
-      console.error("❌ Failed to fetch cart:", err.response?.data || err.message);
+      console.error("Failed to fetch cart from server:", err.response?.data || err.message);
     }
   };
 
@@ -167,27 +167,25 @@ export const CartProvider = ({ children }) => {
         })
       );
       await Promise.all(syncRequests);
-      console.log("🔁 Cart synced to server");
+      console.log("Cart sync complete");
     } catch (err) {
-      console.error("❌ Cart sync failed:", err.response?.data || err.message);
+      console.error("Cart sync failed:", err.response?.data || err.message);
     }
   };
 
-  const clearCart = async () => {
-    try {
-      setCart([]);
-      localStorage.removeItem("cart");
-      console.log("🧹 Cart cleared locally");
+  const clearCart = () => {
+    setCart([]);
+    localStorage.removeItem("cart");
 
-      if (userId) {
-        const res = await axios.delete(`${API_BASE_URL}/cart/${userId}`);
-        console.log("🧼 Cart cleared from server" , res.data);
-      }
-    } catch (error) {
-      console.error("❌ Failed to clear cart from server:", error.response?.data || error.message);
+    if (userId) {
+      axios
+        .delete(`${API_BASE_URL}/cart/${userId}/all`)
+        .then(() => console.log("Cart cleared on server"))
+        .catch((err) =>
+          console.error("Failed to clear cart on server:", err.response?.data || err.message)
+        );
     }
   };
-  
 
   return (
     <CartContext.Provider

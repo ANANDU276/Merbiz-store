@@ -25,7 +25,7 @@ const Cart = () => {
       <div className="flex flex-col lg:flex-row gap-6">
         {/* Cart Items */}
         <div className="lg:w-2/3">
-          <div className="bg-white p-4 rounded-lg mb-4">
+          <div className="bg-white p-4 rounded-lg shadow-sm mb-4">
             <div className="flex items-center justify-between mb-4">
               <h2 className="font-semibold text-lg">Your Cart</h2>
               <div className="text-gray-600 text-sm">
@@ -43,7 +43,7 @@ const Cart = () => {
                     {/* Product Image */}
                     <div className="w-20 h-20 bg-gray-50 rounded-md overflow-hidden flex items-center justify-center">
                       <img
-                        src={item.image[0] || "/default-product.png"}
+                        src={item.image || "/default-product.png"}
                         alt={item.name || "Product"}
                         className="object-contain w-full h-full"
                       />
