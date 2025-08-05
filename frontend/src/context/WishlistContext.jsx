@@ -4,7 +4,7 @@ import AuthContext from "./AuthContext";
 
 const WishlistContext = createContext();
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL_WISHLIST;
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export const WishlistProvider = ({ children }) => {
   const { user } = useContext(AuthContext);
@@ -60,7 +60,7 @@ export const WishlistProvider = ({ children }) => {
 
     if (userId) {
       try {
-        await axios.delete(`${API_BASE_URL}/${userId}/${productId}`);
+        await axios.delete(`${API_BASE_URL}/wishlist/${userId}/${productId}`);
       } catch (err) {
         console.error("Failed to sync removeFromWishlist:", err.response?.data || err.message);
       }
@@ -69,7 +69,7 @@ export const WishlistProvider = ({ children }) => {
 
   const fetchWishlist = async (uid = userId) => {
     try {
-      const res = await axios.get(`${API_BASE_URL}/${uid}`);
+      const res = await axios.get(`${API_BASE_URL}/wishlist/${uid}`);
       const items = res.data?.items?.map((entry) => entry.productId) || [];
       setWishlist(items);
     } catch (err) {
@@ -83,7 +83,7 @@ export const WishlistProvider = ({ children }) => {
 
     if (userId) {
       try {
-        await axios.delete(`${API_BASE_URL}/${userId}/all`);
+        await axios.delete(`${API_BASE_URL}/wishlist/${userId}/all`);
       } catch (err) {
         console.error("Failed to clear wishlist:", err.response?.data || err.message);
       }

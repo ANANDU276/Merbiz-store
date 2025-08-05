@@ -31,6 +31,8 @@ const Checkout = () => {
   const taxRate = 0.08;
   const tax = (subtotal * taxRate).toFixed(2);
   const total = (subtotal + shipping + parseFloat(tax)).toFixed(2);
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 
   // Form state
   const [form, setForm] = useState({
@@ -303,7 +305,7 @@ const Checkout = () => {
     } else if (form.paymentMethod === "Online Payment") {
       try {
         const res = await fetch(
-          "http://localhost:5000/api/payment/create-order",
+          `${API_BASE_URL}/payment/create-order`,
           {
             method: "POST",
             headers: { "Content-Type": "application/json" },
@@ -323,7 +325,7 @@ const Checkout = () => {
           handler: async function (response) {
             try {
               const verifyRes = await fetch(
-                "http://localhost:5000/api/payment/verify-payment",
+                `${API_BASE_URL}/payment/verify-payment`,
                 {
                   method: "POST",
                   headers: { "Content-Type": "application/json" },
