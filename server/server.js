@@ -17,7 +17,7 @@ const app = express();
 const allowedOrigins = [
   "http://localhost:5173",
   "http://localhost:5174",
-  "https://merbiz-store.vercel.app/",
+  "https://merbiz-store.vercel.app",
 ];
 app.use((req, res, next) => {
   const origin = req.headers.origin;
