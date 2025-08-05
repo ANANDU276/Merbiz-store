@@ -57,7 +57,7 @@ export const CartProvider = ({ children }) => {
 
     if (userId) {
       axios
-        .post(`${API_BASE_URL}`, {
+        .post(`${API_BASE_URL}/cart`, {
           userId,
           product: {
             productId: product._id,
@@ -76,7 +76,7 @@ export const CartProvider = ({ children }) => {
 
     if (userId) {
       axios
-        .delete(`${API_BASE_URL}/${userId}/${id}`)
+        .delete(`${API_BASE_URL}/cart/${userId}/${id}`)
         .then(() => console.log("🗑️ removeFromCart synced to server"))
         .catch((err) =>
           console.error("❌ removeFromCart sync failed:", err.response?.data || err.message)
@@ -93,7 +93,7 @@ export const CartProvider = ({ children }) => {
 
     if (userId) {
       axios
-        .post(`${API_BASE_URL}`, {
+        .post(`${API_BASE_URL}/cart`, {
           userId,
           product: {
             productId: id,
@@ -122,7 +122,7 @@ export const CartProvider = ({ children }) => {
 
       if (userId) {
         axios
-          .post(`${API_BASE_URL}`, {
+          .post(`${API_BASE_URL}/cart`, {
             userId,
             product: {
               productId: id,
@@ -139,7 +139,7 @@ export const CartProvider = ({ children }) => {
 
   const fetchCartFromServer = async (uid) => {
     try {
-      const res = await axios.get(`${API_BASE_URL}/${uid}`);
+      const res = await axios.get(`${API_BASE_URL}/cart/${uid}`);
       const serverCart = res.data?.items || [];
 
       const formatted = serverCart.map((item) => ({
@@ -158,7 +158,7 @@ export const CartProvider = ({ children }) => {
   const syncWithServer = async (uid = userId) => {
     try {
       const syncRequests = cart.map((item) =>
-        axios.post(`${API_BASE_URL}`, {
+        axios.post(`${API_BASE_URL}/cart`, {
           userId: uid,
           product: {
             productId: item._id,
@@ -180,7 +180,7 @@ export const CartProvider = ({ children }) => {
       console.log("🧹 Cart cleared locally");
 
       if (userId) {
-        const res = await axios.delete(`${API_BASE_URL}/${userId}`);
+        const res = await axios.delete(`${API_BASE_URL}/cart/${userId}`);
         console.log("🧼 Cart cleared from server" , res.data);
       }
     } catch (error) {
