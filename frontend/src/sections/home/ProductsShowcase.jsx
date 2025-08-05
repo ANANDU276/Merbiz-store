@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
 import { fetchProducts } from "../../api/productsApi";
 import ProductCard from "../../components/ProductCard";
-import { FaStar, FaArrowRight } from "react-icons/fa";
+import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
+import { FaStar, FaArrowRight } from "react-icons/fa";
 
 const ProductsShowcase = () => {
   const [products, setProducts] = useState([]);
+  const [featuredProduct, setFeaturedProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
@@ -14,7 +15,26 @@ const ProductsShowcase = () => {
     const getProducts = async () => {
       try {
         const data = await fetchProducts();
-        setProducts(data.slice(0, 12)); 
+        // Filter only top-selling products
+        const topSellingProducts = data.filter(product => product.topSelling);
+        
+        if (topSellingProducts.length > 0) {
+          // Select random featured product
+          const randomFeaturedIndex = Math.floor(Math.random() * topSellingProducts.length);
+          setFeaturedProduct(topSellingProducts[randomFeaturedIndex]);
+          
+          // Remove featured product from the grid display
+          const productsForGrid = [...topSellingProducts];
+          productsForGrid.splice(randomFeaturedIndex, 1);
+          
+          // Shuffle remaining products randomly
+          const shuffledProducts = productsForGrid.sort(() => 0.5 - Math.random());
+          
+          // Take first 12 or less (since we already have 1 featured)
+          setProducts(shuffledProducts.slice(0, 12));
+        } else {
+          setProducts([]);
+        }
       } catch (err) {
         setError(err.message);
       } finally {
@@ -24,67 +44,100 @@ const ProductsShowcase = () => {
     getProducts();
   }, []);
 
-  if (loading) {
+  if (loading)
     return (
-      <div className="min-h-[50vh] flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+      <div className="min-h-[40vh] flex justify-center items-center">
+        <div className="animate-spin h-10 w-10 rounded-full border-t-2 border-blue-500" />
       </div>
     );
-  }
 
-  if (error) {
+  if (error)
     return (
-      <div className="min-h-[50vh] flex flex-col items-center justify-center text-red-500">
-        <svg className="w-12 h-12 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-        </svg>
-        <p className="text-lg">Error loading products</p>
+      <div className="text-red-500 text-center py-10">
+        <p>Error loading products</p>
         <p className="text-sm">{error}</p>
       </div>
+    );
+
+  // If no top-selling products found
+  if (!loading && products.length === 0 && !featuredProduct) {
+    return (
+      <section className="px-4 py-12">
+        <div className="text-center py-10">
+          <h2 className="text-xl font-medium text-gray-700 mb-2">
+            No top-selling products found
+          </h2>
+          <p className="text-gray-500 mb-4">
+            Check back later for our featured products
+          </p>
+          <Link
+            to="/shop"
+            className="inline-block bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition"
+          >
+            Browse All Products <FaArrowRight className="inline ml-1" />
+          </Link>
+        </div>
+      </section>
     );
   }
 
   return (
-    <main className=" mx-auto px-4 py-12">
-      <motion.div 
+    <section className="px-4 py-12">
+      {/* Featured Block */}
+      <div className="mb-10 bg-blue-50 rounded-xl p-6 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 shadow overflow-hidden relative">
+        {/* Background image pattern */}
+        <div className="absolute inset-0 opacity-5">
+          {featuredProduct?.image?.[0] && (
+            <img 
+              src={featuredProduct.image[0]} 
+              alt="" 
+              className="w-full h-full object-cover"
+            />
+          )}
+        </div>
+        
+        <div className="flex-1 z-10">
+          <div className="flex items-center gap-2 mb-2">
+            {[...Array(5)].map((_, i) => (
+              <FaStar key={i} className="text-yellow-400 text-sm" />
+            ))}
+            <span className="text-xs text-blue-600 bg-blue-100 px-2 py-1 rounded-full">
+              FEATURED TOP SELLER
+            </span>
+          </div>
+          <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-2">
+            {featuredProduct?.name || "Our Top-Selling Products"}
+          </h2>
+          <p className="text-gray-600 text-sm mb-4 line-clamp-2">
+            {featuredProduct?.description || "Customer favorites that everyone's loving. High-quality, top-reviewed items you can trust."}
+          </p>
+          {featuredProduct && (
+            <Link
+              to={`/products/${featuredProduct._id}`}
+              className="inline-flex items-center text-blue-600 hover:text-blue-800 font-medium text-sm"
+            >
+              View this product <FaArrowRight className="ml-1" />
+            </Link>
+          )}
+        </div>
+        
+        {featuredProduct?.image?.[0] && (
+          <div className="flex-shrink-0 w-full sm:w-48 h-48 overflow-hidden z-10">
+            <img
+              src={featuredProduct.image[0]}
+              alt={featuredProduct.name}
+              className="w-full h-full object-contain p-2"
+            />
+          </div>
+        )}
+      </div>
+
+      {/* Product Grid */}
+      <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
-        transition={{ duration: 0.5 }}
-        className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-5 gap-6"
+        className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-4"
       >
-        {/* Featured Card - spans 2 columns on sm and lg screens */}
-        <motion.div 
-          whileHover={{ y: -5 }}
-          className="col-span-1 sm:col-span-2 lg:col-span-2 bg-gradient-to-br from-blue-50 to-blue-100 rounded-xl p-6 shadow-sm hover:shadow-md transition-shadow flex flex-col justify-between min-h-[420px]"
-        >
-          <div>
-            <div className="flex items-center gap-2 mb-3">
-              <div className="flex">
-                {[...Array(5)].map((_, i) => (
-                  <FaStar key={i} className="text-yellow-400" />
-                ))}
-              </div>
-              <span className="text-xs font-semibold text-blue-600 bg-blue-100 px-2 py-1 rounded-full">
-                FEATURED ITEMS
-              </span>
-            </div>
-            <h2 className="text-2xl font-bold text-gray-900 leading-tight mb-4">
-              Top 12 Bestsellers <span className="text-blue-600">This Week</span>
-            </h2>
-            <p className="text-gray-600 mb-6">
-              Discover our handpicked selection of the most popular electronics this week. These trending items are loved by customers for their quality and performance.
-            </p>
-          </div>
-          <Link
-            to="/shop"
-            className="inline-flex items-center px-5 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors w-fit"
-          >
-            Explore All Products
-            <FaArrowRight className="ml-2" />
-          </Link>
-        </motion.div>
-
-        {/* Product Cards */}
         {products.map((product, index) => (
           <motion.div
             key={product._id}
@@ -96,7 +149,7 @@ const ProductsShowcase = () => {
           </motion.div>
         ))}
       </motion.div>
-    </main>
+    </section>
   );
 };
 

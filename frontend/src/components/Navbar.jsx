@@ -1,7 +1,8 @@
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useContext, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 import AuthContext from "../context/AuthContext";
+import { CategoryContext } from "../context/CategoryContext";
 import {
   FaBars,
   FaSearch,
@@ -11,20 +12,41 @@ import {
   FaChevronDown,
   FaChevronUp,
   FaPhoneAlt,
-  FaHeart
+  FaHeart,
+  FaSignOutAlt,
+  FaUserCircle,
+  FaCog
 } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
+import Swal from "sweetalert2";
 
 const Navbar = () => {
   const [menuOpen, setMenuOpen] = useState(false);
   const [categoryOpen, setCategoryOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
+  const [userDropdownOpen, setUserDropdownOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
   const { cart } = useCart();
-  const { user } = useContext(AuthContext);
+  const { user, logout } = useContext(AuthContext);
+  const { setSelectedCategory } = useContext(CategoryContext);
   const navigate = useNavigate();
-  // Mock wishlist items - in a real app, you'd get this from context
   const [wishlist, setWishlist] = useState([]);
+
+  // Define categories
+  const categories = [
+    { name: "Phones", path: "/productpage", category: "Phones" },
+    { name: "Laptops", path: "/productpage", category: "Laptops" },
+    { name: "Headphones", path: "/productpage", category: "Headphones" },
+    { name: "Speakers", path: "/productpage", category: "Speakers" },
+    { name: "Smart Watches", path: "/productpage", category: "Smart Watches" },
+    { name: "Gaming", path: "/productpage", category: "Gaming Gear" },
+    { name: "Features", path: "/features" } // No category filter for this one
+  ];
+
+  // Refs for click-outside functionality
+  const dropdownRef = useRef(null);
+  const userButtonRef = useRef(null);
+  const navbarRef = useRef(null);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -39,15 +61,49 @@ const Navbar = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
+  // Click outside handler for user dropdown
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (userDropdownOpen && 
+          dropdownRef.current && 
+          !dropdownRef.current.contains(event.target) && 
+          userButtonRef.current && 
+          !userButtonRef.current.contains(event.target)) {
+        setUserDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, [userDropdownOpen]);
+
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);
     if (categoryOpen) setCategoryOpen(false);
     if (searchOpen) setSearchOpen(false);
+    if (userDropdownOpen) setUserDropdownOpen(false);
   };
 
   const toggleCategories = () => {
     setCategoryOpen(!categoryOpen);
     if (menuOpen) setMenuOpen(false);
+    if (userDropdownOpen) setUserDropdownOpen(false);
+  };
+
+  const toggleUserDropdown = (e) => {
+    e.stopPropagation();
+    setUserDropdownOpen(!userDropdownOpen);
+    if (menuOpen) setMenuOpen(false);
+    if (categoryOpen) setCategoryOpen(false);
+  };
+
+  const closeAllDropdowns = () => {
+    setUserDropdownOpen(false);
+    setMenuOpen(false);
+    setCategoryOpen(false);
+    setSearchOpen(false);
   };
 
   const handleSearchSubmit = (e) => {
@@ -57,6 +113,31 @@ const Navbar = () => {
       navigate(`/search?q=${encodeURIComponent(query)}`);
       setSearchOpen(false);
     }
+  };
+
+  const handleLogout = () => {
+    Swal.fire({
+      title: 'Are you sure?',
+      text: "You'll need to log in again to access your account",
+      icon: 'warning',
+      showCancelButton: true,
+      confirmButtonColor: '#3085d6',
+      cancelButtonColor: '#d33',
+      confirmButtonText: 'Yes, log out',
+      cancelButtonText: 'Cancel',
+      scrollbarPadding: false
+    }).then((result) => {
+      if (result.isConfirmed) {
+        logout();
+        Swal.fire(
+          'Logged out!',
+          'You have been successfully logged out.',
+          'success'
+        ).then(() => {
+          navigate('/');
+        });
+      }
+    });
   };
 
   const getUserInitials = (name) => {
@@ -78,7 +159,10 @@ const Navbar = () => {
   };
 
   return (
-    <header className={`sticky top-0 z-50 w-full transition-all duration-300 ${scrolled ? "shadow-lg bg-white" : "bg-white"}`}>
+    <header 
+      className={`sticky top-0 z-50 w-full transition-all duration-300 ${scrolled ? "shadow-lg bg-white" : "bg-white"}`}
+      ref={navbarRef}
+    >
       {/* Top Navbar */}
       <div className="container mx-auto px-4 md:px-6 py-3">
         <div className="flex items-center justify-between">
@@ -97,6 +181,7 @@ const Navbar = () => {
             <Link 
               to="/" 
               className="text-2xl font-bold text-blue-700 hover:text-blue-800 transition-colors"
+              onClick={() => setSelectedCategory("")}
             >
               StockMark
             </Link>
@@ -124,13 +209,14 @@ const Navbar = () => {
             </div>
           </form>
 
-          {/* Right section - Icons (always top right) */}
+          {/* Right section - Icons */}
           <div className="flex items-center space-x-4 md:space-x-6">
-            {/* Desktop Navigation Links (hidden on mobile) */}
+            {/* Desktop Navigation Links */}
             <div className="hidden md:flex items-center space-x-6">
               <Link 
                 to="/" 
                 className="text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors"
+                onClick={() => setSelectedCategory("")}
               >
                 Home
               </Link>
@@ -147,7 +233,7 @@ const Navbar = () => {
                 Contact
               </Link>
               <Link 
-                to="/orders" 
+                to="/myorders" 
                 className="text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors"
               >
                 My Orders
@@ -182,16 +268,62 @@ const Navbar = () => {
               )}
             </Link>
 
-            {/* User Avatar (always top right) */}
+            {/* User Avatar */}
             {user ? (
-              <Link 
-                to="/account" 
-                className="flex items-center justify-center w-8 h-8 rounded-full bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 transition-colors"
-                aria-label="My Account"
-                title={user.name}
-              >
-                {getUserInitials(user.name)}
-              </Link>
+              <div className="relative">
+                <button
+                  ref={userButtonRef}
+                  onClick={toggleUserDropdown}
+                  className="flex items-center justify-center w-8 h-8 rounded-full bg-blue-600 text-white text-sm font-medium hover:bg-blue-700 transition-colors focus:outline-none"
+                  aria-label="My Account"
+                  aria-expanded={userDropdownOpen}
+                  title={user.name}
+                >
+                  {getUserInitials(user.name)}
+                </button>
+
+                {/* User Dropdown Menu */}
+                <AnimatePresence>
+                  {userDropdownOpen && (
+                    <motion.div
+                      ref={dropdownRef}
+                      initial={{ opacity: 0, y: -10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      transition={{ duration: 0.2 }}
+                      className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 border border-gray-200"
+                    >
+                      <div className="px-4 py-2 text-sm text-gray-700 border-b border-gray-100">
+                        <div className="font-medium">Hi, {user.name.split(' ')[0]}</div>
+                        <div className="text-xs text-gray-500 truncate">{user.email}</div>
+                      </div>
+                      <Link
+                        to="/account"
+                        className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        onClick={closeAllDropdowns}
+                      >
+                        <FaUserCircle className="mr-2" />
+                        My Account
+                      </Link>
+                      <Link
+                        to="/account/settings"
+                        className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        onClick={closeAllDropdowns}
+                      >
+                        <FaCog className="mr-2" />
+                        Settings
+                      </Link>
+                      <button
+                        onClick={handleLogout}
+                        className="w-full text-left flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      >
+                        <FaSignOutAlt className="mr-2" />
+                        Logout
+                      </button>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
             ) : (
               <Link 
                 to="/login" 
@@ -202,9 +334,12 @@ const Navbar = () => {
               </Link>
             )}
 
-            {/* Mobile Search Button (hidden on desktop) */}
+            {/* Mobile Search Button */}
             <button 
-              onClick={() => setSearchOpen(!searchOpen)} 
+              onClick={() => {
+                setSearchOpen(!searchOpen);
+                setUserDropdownOpen(false);
+              }} 
               className="md:hidden p-1 focus:outline-none"
               aria-label="Search"
             >
@@ -213,7 +348,7 @@ const Navbar = () => {
           </div>
         </div>
 
-        {/* Mobile Search - Only appears when searchOpen is true */}
+        {/* Mobile Search */}
         <AnimatePresence>
           {searchOpen && (
             <motion.div
@@ -259,51 +394,62 @@ const Navbar = () => {
               <Link 
                 to="/" 
                 className="py-2 px-2 hover:text-blue-600 transition-colors border-b border-gray-100"
-                onClick={() => setMenuOpen(false)}
+                onClick={() => {
+                  setSelectedCategory("");
+                  closeAllDropdowns();
+                }}
               >
                 Home
               </Link>
               <Link 
                 to="/about" 
                 className="py-2 px-2 hover:text-blue-600 transition-colors border-b border-gray-100"
-                onClick={() => setMenuOpen(false)}
+                onClick={closeAllDropdowns}
               >
                 About
               </Link>
               <Link 
                 to="/contact" 
                 className="py-2 px-2 hover:text-blue-600 transition-colors border-b border-gray-100"
-                onClick={() => setMenuOpen(false)}
+                onClick={closeAllDropdowns}
               >
                 Contact
               </Link>
               <Link 
                 to="/orders" 
                 className="py-2 px-2 hover:text-blue-600 transition-colors border-b border-gray-100"
-                onClick={() => setMenuOpen(false)}
+                onClick={closeAllDropdowns}
               >
                 My Orders
               </Link>
               <Link 
                 to="/wishlist" 
                 className="py-2 px-2 hover:text-blue-600 transition-colors border-b border-gray-100"
-                onClick={() => setMenuOpen(false)}
+                onClick={closeAllDropdowns}
               >
                 My Wishlist
               </Link>
               {user ? (
-                <Link 
-                  to="/account" 
-                  className="py-2 px-2 hover:text-blue-600 transition-colors border-b border-gray-100"
-                  onClick={() => setMenuOpen(false)}
-                >
-                  My Account
-                </Link>
+                <>
+                  <Link 
+                    to="/account" 
+                    className="py-2 px-2 hover:text-blue-600 transition-colors border-b border-gray-100"
+                    onClick={closeAllDropdowns}
+                  >
+                    My Account
+                  </Link>
+                  <button
+                    onClick={handleLogout}
+                    className="py-2 px-2 text-left hover:text-blue-600 transition-colors border-b border-gray-100"
+                  >
+                    Logout
+                  </button>
+                </>
               ) : (
                 <Link 
                   to="/login" 
                   className="py-2 px-2 hover:text-blue-600 transition-colors border-b border-gray-100"
-                  onClick={() => setMenuOpen(false)}
+                  onClick={closeAllDropdowns}
                 >
                   Login / Register
                 </Link>
@@ -319,48 +465,26 @@ const Navbar = () => {
           {/* Desktop Categories */}
           <div className="hidden md:flex justify-between items-center px-6 py-2">
             <nav className="flex items-center space-x-6 overflow-x-auto py-2 hide-scrollbar">
-              <div className="flex-shrink-0 cursor-pointer group relative py-2">
-                <div className="flex items-center text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors">
-                  Phones <FaChevronDown className="ml-1 text-xs opacity-70 group-hover:opacity-100" />
-                </div>
-                {/* Dropdown would go here */}
-              </div>
-              <div className="flex-shrink-0 cursor-pointer group relative py-2">
-                <div className="flex items-center text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors">
-                  Laptops <FaChevronDown className="ml-1 text-xs opacity-70 group-hover:opacity-100" />
-                </div>
-                {/* Dropdown would go here */}
-              </div>
-              <Link 
-                to="/headphones" 
-                className="flex-shrink-0 text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors py-2"
-              >
-                Headphones
-              </Link>
-              <Link 
-                to="/speakers" 
-                className="flex-shrink-0 text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors py-2"
-              >
-                Speakers
-              </Link>
-              <Link 
-                to="/smartwatches" 
-                className="flex-shrink-0 text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors py-2"
-              >
-                Smart Watches
-              </Link>
-              <Link 
-                to="/gaming" 
-                className="flex-shrink-0 text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors py-2"
-              >
-                Gaming
-              </Link>
-              <Link 
-                to="/features" 
-                className="flex-shrink-0 text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors py-2"
-              >
-                Features
-              </Link>
+              {categories.map((item, index) => (
+                <React.Fragment key={index}>
+                  {item.category ? (
+                    <Link
+                      to={item.path}
+                      onClick={() => setSelectedCategory(item.category)}
+                      className="flex-shrink-0 text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors py-2"
+                    >
+                      {item.name}
+                    </Link>
+                  ) : (
+                    <Link
+                      to={item.path}
+                      className="flex-shrink-0 text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors py-2"
+                    >
+                      {item.name}
+                    </Link>
+                  )}
+                </React.Fragment>
+              ))}
             </nav>
             <div className="flex-shrink-0 flex items-center text-xs text-gray-500 ml-6">
               <FaPhoneAlt className="mr-2" />
@@ -389,47 +513,30 @@ const Navbar = () => {
                   className="mt-2"
                 >
                   <div className="flex flex-col gap-1 text-sm text-gray-800">
-                    <div className="cursor-pointer hover:text-blue-600 px-2 py-1 rounded hover:bg-gray-100">
-                      Phones
-                    </div>
-                    <div className="cursor-pointer hover:text-blue-600 px-2 py-1 rounded hover:bg-gray-100">
-                      Laptops
-                    </div>
-                    <Link 
-                      to="/headphones" 
-                      className="hover:text-blue-600 px-2 py-1 rounded hover:bg-gray-100"
-                      onClick={() => setCategoryOpen(false)}
-                    >
-                      Headphones
-                    </Link>
-                    <Link 
-                      to="/speakers" 
-                      className="hover:text-blue-600 px-2 py-1 rounded hover:bg-gray-100"
-                      onClick={() => setCategoryOpen(false)}
-                    >
-                      Speakers
-                    </Link>
-                    <Link 
-                      to="/smartwatches" 
-                      className="hover:text-blue-600 px-2 py-1 rounded hover:bg-gray-100"
-                      onClick={() => setCategoryOpen(false)}
-                    >
-                      Smart Watches
-                    </Link>
-                    <Link 
-                      to="/gaming" 
-                      className="hover:text-blue-600 px-2 py-1 rounded hover:bg-gray-100"
-                      onClick={() => setCategoryOpen(false)}
-                    >
-                      Gaming
-                    </Link>
-                    <Link 
-                      to="/features" 
-                      className="hover:text-blue-600 px-2 py-1 rounded hover:bg-gray-100"
-                      onClick={() => setCategoryOpen(false)}
-                    >
-                      Features
-                    </Link>
+                    {categories.map((item, index) => (
+                      <React.Fragment key={index}>
+                        {item.category ? (
+                          <Link
+                            to={item.path}
+                            onClick={() => {
+                              setSelectedCategory(item.category);
+                              closeAllDropdowns();
+                            }}
+                            className="hover:text-blue-600 px-2 py-1 rounded hover:bg-gray-100"
+                          >
+                            {item.name}
+                          </Link>
+                        ) : (
+                          <Link
+                            to={item.path}
+                            onClick={closeAllDropdowns}
+                            className="hover:text-blue-600 px-2 py-1 rounded hover:bg-gray-100"
+                          >
+                            {item.name}
+                          </Link>
+                        )}
+                      </React.Fragment>
+                    ))}
                   </div>
                   <div className="flex items-center text-xs text-gray-500 mt-3 px-2 py-1">
                     <FaPhoneAlt className="mr-2" />

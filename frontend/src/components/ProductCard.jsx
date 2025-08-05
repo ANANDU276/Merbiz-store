@@ -44,23 +44,34 @@ const ProductCard = ({ product }) => {
 
     for (let i = 0; i < 5; i++) {
       if (i < fullStars) {
-        stars.push(<span key={i} className="text-yellow-400">★</span>);
+        stars.push(
+          <span key={i} className="text-yellow-400">
+            ★
+          </span>
+        );
       } else if (i === fullStars && hasHalfStar) {
-        stars.push(<span key={i} className="text-yellow-400">½</span>);
+        stars.push(
+          <span key={i} className="text-yellow-400">
+            ½
+          </span>
+        );
       } else {
-        stars.push(<span key={i} className="text-gray-300">★</span>);
+        stars.push(
+          <span key={i} className="text-gray-300">
+            ★
+          </span>
+        );
       }
     }
-
     return stars;
   };
 
-  const isOnSale = product.originalPrice && product.originalPrice > product.price;
+  const isOnSale =
+    product.originalPrice && product.originalPrice > product.price;
 
   return (
-    <motion.div
-      whileHover={{ y: -5 }}
-      className="relative bg-white p-4 rounded-lg transition-all flex flex-col h-full"
+    <div
+      className="relative bg-white p-4 rounded-lg flex flex-col h-full shadow-sm transition-all group"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
@@ -85,12 +96,12 @@ const ProductCard = ({ product }) => {
         )}
       </button>
 
-      {/* Image and Add to Cart Button */}
+      {/* Image + Add to Cart */}
       <div className="relative flex-grow flex items-center justify-center p-4 overflow-hidden">
         <motion.img
-          src={product.image || "/default-product.png"}
+          src={product.image[0] || "/default-product.png"}
           alt={product.name || "Product"}
-          className="w-full h-48 object-contain"
+          className="w-full h-48 object-contain transition-transform"
           whileHover={{ scale: 1.05 }}
           transition={{ duration: 0.2 }}
           onError={(e) => {
@@ -98,10 +109,13 @@ const ProductCard = ({ product }) => {
           }}
         />
 
+        {/* Add to Cart: Hover only on lg+, always visible on sm/md */}
         <div
-          className={`absolute bottom-0 left-0 right-0 bg-blue-600 text-white text-center py-2 transition-all duration-300 z-10 ${
-            isHovered ? "translate-y-0" : "translate-y-full"
-          }`}
+          className={`
+            absolute bottom-0 left-0 right-0 bg-blue-600 text-white text-center py-2 z-10
+            transition-transform duration-300
+            lg:translate-y-full lg:group-hover:translate-y-0
+          `}
         >
           <button
             onClick={(e) => {
@@ -116,7 +130,9 @@ const ProductCard = ({ product }) => {
               }
             }}
             className={`w-full text-sm font-medium ${
-              product.stock === 0 ? "opacity-70 cursor-not-allowed" : "hover:bg-blue-700"
+              product.stock === 0
+                ? "opacity-70 cursor-not-allowed"
+                : "hover:bg-blue-700"
             }`}
           >
             {product.stock > 0 ? "Add to Cart" : "Out of Stock"}
@@ -136,7 +152,7 @@ const ProductCard = ({ product }) => {
           {product.name || "Unnamed Product"}
         </h3>
 
-        {/* Color Options */}
+        {/* Color Dots */}
         {product.colors?.length > 0 && (
           <div className="flex space-x-2 mt-2">
             {product.colors.map((color, index) => (
@@ -187,13 +203,13 @@ const ProductCard = ({ product }) => {
         </div>
       </div>
 
-      {/* Clickable overlay link */}
+      {/* Overlay link */}
       <Link
         to={`/products/${product._id}`}
         className="absolute inset-0 z-0"
         aria-label={`View ${product.name || "product"} details`}
       />
-    </motion.div>
+    </div>
   );
 };
 

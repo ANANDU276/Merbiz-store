@@ -1,24 +1,30 @@
 import React, { useEffect, useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { fetchProductById } from "../api/productsApi";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, ChevronLeft, ChevronRight } from "lucide-react";
 
 const ProductDetails = () => {
   const { id } = useParams();
   const [product, setProduct] = useState(null);
   const [quantity, setQuantity] = useState(1);
-  const [selectedColor, setSelectedColor] = useState("");
-  const [selectedImage, setSelectedImage] = useState(0);
+  const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [error, setError] = useState(null);
-  
 
   useEffect(() => {
     const getProduct = async () => {
       try {
         const data = await fetchProductById(id);
+        if (!data) {
+          throw new Error("Product not found");
+        }
         setProduct(data);
-        setSelectedColor(data?.colors?.[0] || "");
-        setSelectedImage(data?.images?.[0] || data.image);
+        if (!data.image || !Array.isArray(data.image)) {
+          data.image = ["", "", ""];
+        } else {
+          while (data.image.length < 3) {
+            data.image.push("");
+          }
+        }
       } catch (err) {
         setError(err.message);
       }
@@ -32,6 +38,16 @@ const ProductDetails = () => {
     );
   };
 
+  const handleImageChange = (direction) => {
+    setSelectedImageIndex((prev) => {
+      if (direction === "next") {
+        return prev === 2 ? 0 : prev + 1;
+      } else {
+        return prev === 0 ? 2 : prev - 1;
+      }
+    });
+  };
+
   if (error)
     return (
       <div className="px-4 py-10 mx-auto text-center text-red-500">
@@ -42,7 +58,7 @@ const ProductDetails = () => {
     return <div className="px-4 py-10 mx-auto text-center">Loading...</div>;
 
   return (
-    <main className="px-4 py-10 mx-auto ">
+    <main className="px-4 py-10 mx-auto">
       {/* Breadcrumbs */}
       <div className="flex items-center text-sm text-gray-500 mb-6">
         <Link to="/" className="hover:text-blue-600">
@@ -56,39 +72,71 @@ const ProductDetails = () => {
         <span className="text-gray-400">{product.name}</span>
       </div>
 
+      {/* Top Selling Badge */}
+      {product.topSelling && (
+        <div className="bg-yellow-100 text-yellow-800 px-3 py-1 rounded-full text-sm font-medium inline-block mb-4">
+          Top Selling Product
+        </div>
+      )}
+
       <div className="flex flex-col lg:flex-row gap-6">
         {/* Images Gallery */}
         <div className="w-full lg:w-1/2">
           <div className="bg-white p-4 rounded-lg shadow-sm mb-4">
             <div className="flex flex-col-reverse sm:flex-row gap-4">
-              {/* Thumbnails */}
-              <div className="flex sm:flex-col gap-2 overflow-x-auto sm:overflow-x-visible">
-                {[product.image, ...(product.images || [])].map((img, idx) => (
+              {/* Thumbnails - exactly 3 images */}
+              <div className="flex sm:flex-col gap-2">
+                {product.image.map((img, idx) => (
                   <button
                     key={idx}
-                    onClick={() => setSelectedImage(img)}
+                    onClick={() => setSelectedImageIndex(idx)}
                     className={`w-16 h-16 flex-shrink-0 border rounded-md overflow-hidden ${
-                      selectedImage === img
+                      selectedImageIndex === idx
                         ? "border-blue-500 ring-2 ring-blue-200"
                         : "border-gray-200"
                     }`}
                   >
-                    <img
-                      src={img}
-                      alt={`Thumbnail ${idx + 1}`}
-                      className="w-full h-full object-contain"
-                    />
+                    {img ? (
+                      <img
+                        src={img}
+                        alt={`Thumbnail ${idx + 1}`}
+                        className="w-full h-full object-contain"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-gray-100 flex items-center justify-center">
+                        <span className="text-xs text-gray-400">No image</span>
+                      </div>
+                    )}
                   </button>
                 ))}
               </div>
 
-              {/* Main Image */}
-              <div className="flex-1 bg-gray-50 rounded-lg flex items-center justify-center p-4">
-                <img
-                  src={selectedImage}
-                  alt={product.name}
-                  className="w-full h-80 object-contain"
-                />
+              {/* Main Image with navigation */}
+              <div className="flex-1 bg-gray-50 rounded-lg flex items-center justify-center p-4 relative">
+                {product.image[selectedImageIndex] ? (
+                  <img
+                    src={product.image[selectedImageIndex]}
+                    alt={product.name}
+                    className="w-full h-80 object-contain"
+                  />
+                ) : (
+                  <div className="w-full h-80 bg-gray-100 flex items-center justify-center">
+                    <span className="text-gray-400">Image not available</span>
+                  </div>
+                )}
+                {/* Navigation arrows */}
+                <button
+                  onClick={() => handleImageChange("prev")}
+                  className="absolute left-2 top-1/2 -translate-y-1/2 bg-white/80 p-1 rounded-full shadow hover:bg-white transition-colors"
+                >
+                  <ChevronLeft className="w-5 h-5" />
+                </button>
+                <button
+                  onClick={() => handleImageChange("next")}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 bg-white/80 p-1 rounded-full shadow hover:bg-white transition-colors"
+                >
+                  <ChevronRight className="w-5 h-5" />
+                </button>
               </div>
             </div>
           </div>
@@ -101,19 +149,27 @@ const ProductDetails = () => {
               {product.name}
             </h1>
 
+            {/* Category */}
+            {product.category && (
+              <div className="text-sm text-gray-500 mb-3">
+                Category: {product.category}
+              </div>
+            )}
+
             {/* Price */}
             <div className="flex items-center gap-3 mb-4">
               <span className="text-xl font-bold text-blue-600">
                 ₹{product.price.toLocaleString()}
               </span>
-              {product.originalPrice && (
-                <span className="text-gray-500 line-through">
-                  ₹{product.originalPrice.toLocaleString()}
-                </span>
-              )}
-              {product.discount && (
-                <span className="bg-green-100 text-green-800 text-xs font-medium px-2 py-0.5 rounded">
-                  {product.discount}% OFF
+              {product.stock && (
+                <span
+                  className={`text-xs font-medium px-2 py-0.5 rounded ${
+                    product.stock > 0
+                      ? "bg-green-100 text-green-800"
+                      : "bg-red-100 text-red-800"
+                  }`}
+                >
+                  {product.stock > 0 ? "In Stock" : "Out of Stock"}
                 </span>
               )}
             </div>
@@ -138,36 +194,12 @@ const ProductDetails = () => {
                   ))}
                 </div>
                 <span className="text-gray-600 text-sm ml-1">
-                  ({product.ratingCount || 0} reviews)
+                  {product.rating.toFixed(1)} rating
                 </span>
               </div>
             )}
 
             <p className="text-gray-600 mb-6">{product.description}</p>
-
-            {/* Color Selection */}
-            {product.colors?.length > 0 && (
-              <div className="mb-6">
-                <h3 className="text-sm font-medium text-gray-700 mb-2">
-                  Color: <span className="font-normal">{selectedColor}</span>
-                </h3>
-                <div className="flex gap-2">
-                  {product.colors.map((color) => (
-                    <button
-                      key={color}
-                      onClick={() => setSelectedColor(color)}
-                      className={`w-8 h-8 rounded-full border-2 transition-all ${
-                        selectedColor === color
-                          ? "border-blue-500 ring-2 ring-blue-200"
-                          : "border-gray-200 hover:border-gray-300"
-                      }`}
-                      style={{ backgroundColor: color }}
-                      aria-label={`Select color ${color}`}
-                    />
-                  ))}
-                </div>
-              </div>
-            )}
 
             {/* Quantity Selector */}
             <div className="mb-6">
@@ -189,33 +221,53 @@ const ProductDetails = () => {
                 <button
                   className="w-10 h-10 flex items-center justify-center text-gray-600 hover:bg-gray-50"
                   onClick={() => handleQuantityChange("increment")}
+                  disabled={product.stock !== undefined && quantity >= product.stock}
                   aria-label="Increase quantity"
                 >
                   +
                 </button>
               </div>
+              {product.stock !== undefined && (
+                <p className="text-sm text-gray-500 mt-1">
+                  {product.stock} available
+                </p>
+              )}
             </div>
 
             {/* Action Buttons */}
             <div className="flex flex-col sm:flex-row gap-3 mb-6">
-              <button className="flex-1 bg-blue-600 text-white py-3 rounded-md font-medium hover:bg-blue-700 transition-colors">
+              <button 
+                className="flex-1 bg-blue-600 text-white py-3 rounded-md font-medium hover:bg-blue-700 transition-colors"
+                disabled={product.stock === 0}
+              >
                 Buy Now
               </button>
-              <button className="flex-1 bg-white border border-blue-600 text-blue-600 py-3 rounded-md font-medium hover:bg-blue-50 transition-colors">
+              <button 
+                className="flex-1 bg-white border border-blue-600 text-blue-600 py-3 rounded-md font-medium hover:bg-blue-50 transition-colors"
+                disabled={product.stock === 0}
+              >
                 Add to Cart
               </button>
             </div>
 
             {/* Product Details */}
             <div className="border-t border-gray-200 pt-4">
-              <h3 className="font-medium mb-3">Product Details</h3>
+              <h3 className="font-medium mb-3">Product Specifications</h3>
               <ul className="text-sm space-y-2 text-gray-600">
-                {product.details?.map((detail, i) => (
-                  <li key={i} className="flex">
+                <li className="flex">
+                  <span className="text-gray-400 mr-2">•</span>
+                  <strong>Category:</strong> {product.category || "N/A"}
+                </li>
+                <li className="flex">
+                  <span className="text-gray-400 mr-2">•</span>
+                  <strong>Stock:</strong> {product.stock || "N/A"}
+                </li>
+                {product.topSelling && (
+                  <li className="flex">
                     <span className="text-gray-400 mr-2">•</span>
-                    {detail}
+                    <strong>Status:</strong> Top Selling Product
                   </li>
-                ))}
+                )}
               </ul>
             </div>
 
@@ -223,24 +275,6 @@ const ProductDetails = () => {
             <div className="mt-6 border-t border-gray-200 pt-4">
               <h3 className="font-medium mb-3">Shipping & Returns</h3>
               <div className="text-sm space-y-2 text-gray-600">
-                <div className="flex items-start">
-                  <svg
-                    className="w-5 h-5 text-green-500 mr-2 mt-0.5 flex-shrink-0"
-                    fill="none"
-                    stroke="currentColor"
-                    viewBox="0 0 24 24"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth="2"
-                      d="M5 13l4 4L19 7"
-                    />
-                  </svg>
-                  <span>
-                    <strong>Free shipping</strong> on orders over ₹1000
-                  </span>
-                </div>
                 <div className="flex items-start">
                   <svg
                     className="w-5 h-5 text-green-500 mr-2 mt-0.5 flex-shrink-0"
