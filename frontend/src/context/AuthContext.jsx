@@ -1,5 +1,7 @@
+// src/context/AuthContext.js
 import React, { createContext, useEffect, useState } from "react";
 import axios from "axios";
+import setAuthToken from "../utils/setAuthToken";
 
 const AuthContext = createContext();
 
@@ -7,22 +9,35 @@ export const AuthProvider = ({ children }) => {
   const [user, setUser] = useState(null);
   const [token, setToken] = useState(null);
   const [loading, setLoading] = useState(true);
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
+  // Validate token and fetch user on app load
   useEffect(() => {
-    const storedToken = localStorage.getItem("token");
-    const storedUser = localStorage.getItem("user");
+    const initializeAuth = async () => {
+      const storedToken = localStorage.getItem("token");
 
-    if (storedToken && storedUser) {
-      const parsedUser = JSON.parse(storedUser);
-      setToken(storedToken);
-      setUser(parsedUser);
+      if (storedToken) {
+        setAuthToken(storedToken);
 
-      axios.defaults.headers.common["Authorization"] = `Bearer ${storedToken}`;
-      console.log("Auth token set from localStorage");
-    }
+        try {
+          const res = await axios.get(`${API_BASE_URL}/auth/me`);
+          const userData = res.data;
 
-    setLoading(false);
+          setUser(userData);
+          setToken(storedToken);
+          localStorage.setItem("user", JSON.stringify(userData));
+
+          console.log("User authenticated from stored token");
+        } catch (err) {
+          console.warn("Invalid or expired token:", err.response?.data?.message || err.message);
+          logout();
+        }
+      }
+
+      setLoading(false);
+    };
+
+    initializeAuth();
   }, []);
 
   const login = async (email, password) => {
@@ -36,12 +51,12 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
       localStorage.setItem("token", jwt);
       localStorage.setItem("user", JSON.stringify(userData));
+
       setToken(jwt);
       setUser(userData);
+      setAuthToken(jwt);
 
-      axios.defaults.headers.common["Authorization"] = `Bearer ${jwt}`;
-      console.log("Auth token set after login");
-
+      console.log("User logged in and token set");
     } catch (err) {
       console.error("Login failed:", err.response?.data || err.message);
       throw err;
@@ -66,11 +81,9 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
     console.log("Logging out...");
     localStorage.removeItem("token");
     localStorage.removeItem("user");
-    setUser(null);
     setToken(null);
-
-    delete axios.defaults.headers.common["Authorization"];
-    console.log("User logged out");
+    setUser(null);
+    setAuthToken(null);
   };
 
   return (
