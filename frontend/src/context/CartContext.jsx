@@ -7,7 +7,7 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
 export const CartProvider = ({ children }) => {
   const { user, loading: authLoading } = useContext(AuthContext);
-  const userId = user?.id;
+  const userId = user?._id;
 
   const [cart, setCart] = useState([]);
 

@@ -13,7 +13,7 @@ export const WishlistProvider = ({ children }) => {
     return stored ? JSON.parse(stored) : [];
   });
 
-  const userId = user?.id;
+const userId = user?._id;
 
   useEffect(() => {
   if (!userId) {
@@ -45,7 +45,7 @@ export const WishlistProvider = ({ children }) => {
 
     if (userId) {
       try {
-        await axios.post(`${API_BASE_URL}`, {
+        await axios.post(`${API_BASE_URL}/wishlist`, {
           userId,
           productId: product._id,
         });
