@@ -190,7 +190,7 @@ const Navbar = () => {
               className="text-2xl font-bold text-blue-700 hover:text-blue-800 transition-colors"
               onClick={() => setSelectedCategory("")}
             >
-              StockMark
+              Merbiz
             </Link>
           </div>
 

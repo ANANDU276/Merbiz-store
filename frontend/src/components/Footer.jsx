@@ -11,7 +11,7 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-5 gap-8">
           {/* Logo & copyright */}
           <div className="space-y-3">
-            <h2 className="text-xl font-bold text-gray-900">StockMark</h2>
+            <h2 className="text-xl font-bold text-gray-900">Merbiz Store</h2>
             <p>
               © {currentYear} Stockmart Modern by{' '}
               <a 
@@ -100,7 +100,7 @@ const Footer = () => {
             >
               +84 1234 555 77
             </a>
-            <p className="pt-2">Email: support@stockmark.com</p>
+            <p className="pt-2">Email: support@merbiz.com</p>
             <div className="flex space-x-4 pt-2">
               {[
                 { icon: <FaFacebookF />, label: 'Facebook', color: 'hover:text-blue-600' },
