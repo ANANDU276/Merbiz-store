@@ -59,6 +59,8 @@ const MyOrders = () => {
       showCancelButton: true,
       confirmButtonText: "Submit Request",
       cancelButtonText: "Cancel",
+      scrollbarPadding: false,
+
       preConfirm: () => {
         const reason = document.getElementById("return-reason").value;
         if (!reason) {
@@ -80,6 +82,7 @@ const MyOrders = () => {
           text: "Your return request has been received. We will process it shortly.",
           icon: "success",
           confirmButtonText: "OK",
+          scrollbarPadding: false,
         });
       } catch (error) {
         Swal.fire({
@@ -87,6 +90,7 @@ const MyOrders = () => {
           text: error.message || "Failed to submit return request",
           icon: "error",
           confirmButtonText: "OK",
+          scrollbarPadding: false,
         });
       } finally {
         setActiveReturnOrder(null);
@@ -364,6 +368,7 @@ const MyOrders = () => {
                               showCancelButton: true,
                               confirmButtonText: "Yes, cancel it",
                               cancelButtonText: "No, keep it",
+                              scrollbarPadding: false,
                             }).then((result) => {
                               if (result.isConfirmed) {
                                 Swal.fire(

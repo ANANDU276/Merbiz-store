@@ -21,8 +21,7 @@ const Checkout = () => {
     deleteAddress,
   } = useAddress();
   const navigate = useNavigate();
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
-
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
   // Calculate order totals
   const subtotal = cart.reduce(
@@ -115,6 +114,7 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
         title: "Address Saved!",
         text: "Your address has been saved successfully.",
         confirmButtonColor: "#3399cc",
+        scrollbarPadding: false,
       });
     } catch (error) {
       console.error("Error saving address:", error);
@@ -123,6 +123,7 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
         title: "Failed to Save",
         text: error.message || "Failed to save address. Please try again.",
         confirmButtonColor: "#3399cc",
+        scrollbarPadding: false,
       });
     }
   };
@@ -164,6 +165,7 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
         title: "Address Updated!",
         text: "Your address has been updated successfully.",
         confirmButtonColor: "#3399cc",
+        scrollbarPadding: false,
       });
 
       setEditingAddress(null);
@@ -174,6 +176,7 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
         title: "Update Failed",
         text: "Failed to update address. Please try again.",
         confirmButtonColor: "#3399cc",
+        scrollbarPadding: false,
       });
     }
   };
@@ -187,6 +190,7 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
       confirmButtonColor: "#d33",
       cancelButtonColor: "#3085d6",
       confirmButtonText: "Yes, delete it!",
+      scrollbarPadding: false,
     });
 
     if (result.isConfirmed) {
@@ -204,6 +208,7 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
           title: "Delete Failed",
           text: "Failed to delete address. Please try again.",
           confirmButtonColor: "#3399cc",
+          scrollbarPadding: false,
         });
       }
     }
@@ -215,6 +220,7 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
       title: "Address Limit Reached",
       text: `You can only save up to ${MAX_ADDRESSES_PER_USER} addresses. Please delete an existing one to add a new address.`,
       confirmButtonColor: "#3399cc",
+      scrollbarPadding: false,
     });
   };
 
@@ -233,6 +239,7 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
         title: "Missing Information",
         text: "Please fill in all required fields.",
         confirmButtonColor: "#3399cc",
+        scrollbarPadding: false,
       });
       return;
     }
@@ -290,6 +297,7 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
           title: "Order Placed!",
           text: "Your order has been placed successfully with Cash on Delivery.",
           confirmButtonColor: "#3399cc",
+          scrollbarPadding: false,
         });
 
         navigate("/ordersuccess", { state: { order: orderData } });
@@ -300,18 +308,16 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
           title: "Order Failed",
           text: "Failed to place order. Please try again.",
           confirmButtonColor: "#3399cc",
+          scrollbarPadding: false,
         });
       }
     } else if (form.paymentMethod === "Online Payment") {
       try {
-        const res = await fetch(
-         `${API_BASE_URL}/payment/create-order`,
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ total }),
-          }
-        );
+        const res = await fetch(`${API_BASE_URL}/payment/create-order`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ total }),
+        });
 
         const data = await res.json();
 
@@ -355,6 +361,7 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
                   title: "Payment Verified!",
                   text: "Your payment has been verified and order placed successfully.",
                   confirmButtonColor: "#3399cc",
+                  scrollbarPadding: false,
                 });
 
                 navigate("/ordersuccess");
@@ -364,6 +371,7 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
                   title: "Verification Failed",
                   text: "Payment verification failed. Order not placed.",
                   confirmButtonColor: "#3399cc",
+                  scrollbarPadding: false,
                 });
               }
             } catch (err) {
@@ -373,6 +381,7 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
                 title: "Verification Error",
                 text: "Could not verify payment. Please contact support.",
                 confirmButtonColor: "#3399cc",
+                scrollbarPadding: false,
               });
             }
           },
@@ -395,6 +404,7 @@ const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
           title: "Payment Error",
           text: "Failed to initiate payment. Please try again.",
           confirmButtonColor: "#3399cc",
+          scrollbarPadding: false,
         });
       }
     }

@@ -15,7 +15,7 @@ import {
   FaHeart,
   FaSignOutAlt,
   FaUserCircle,
-  FaCog
+  FaCog,
 } from "react-icons/fa";
 import { motion, AnimatePresence } from "framer-motion";
 import Swal from "sweetalert2";
@@ -40,7 +40,7 @@ const Navbar = () => {
     { name: "Speakers", path: "/productpage", category: "Speakers" },
     { name: "Smart Watches", path: "/productpage", category: "Smart Watches" },
     { name: "Gaming", path: "/productpage", category: "Gaming Gear" },
-    { name: "Features", path: "/features" } // No category filter for this one
+    { name: "Features", path: "/features" }, // No category filter for this one
   ];
 
   // Refs for click-outside functionality
@@ -64,11 +64,13 @@ const Navbar = () => {
   // Click outside handler for user dropdown
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (userDropdownOpen && 
-          dropdownRef.current && 
-          !dropdownRef.current.contains(event.target) && 
-          userButtonRef.current && 
-          !userButtonRef.current.contains(event.target)) {
+      if (
+        userDropdownOpen &&
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target) &&
+        userButtonRef.current &&
+        !userButtonRef.current.contains(event.target)
+      ) {
         setUserDropdownOpen(false);
       }
     };
@@ -117,24 +119,24 @@ const Navbar = () => {
 
   const handleLogout = () => {
     Swal.fire({
-      title: 'Are you sure?',
+      title: "Are you sure?",
       text: "You'll need to log in again to access your account",
-      icon: 'warning',
+      icon: "warning",
       showCancelButton: true,
-      confirmButtonColor: '#3085d6',
-      cancelButtonColor: '#d33',
-      confirmButtonText: 'Yes, log out',
-      cancelButtonText: 'Cancel',
-      scrollbarPadding: false
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, log out",
+      cancelButtonText: "Cancel",
+      scrollbarPadding: false,
     }).then((result) => {
       if (result.isConfirmed) {
         logout();
         Swal.fire(
-          'Logged out!',
-          'You have been successfully logged out.',
-          'success'
+          "Logged out!",
+          "You have been successfully logged out.",
+          "success"
         ).then(() => {
-          navigate('/');
+          navigate("/");
         });
       }
     });
@@ -142,25 +144,30 @@ const Navbar = () => {
 
   const getUserInitials = (name) => {
     if (!name) return "";
-    
-    const words = name.trim().split(' ').filter(word => word.length > 0);
-    
+
+    const words = name
+      .trim()
+      .split(" ")
+      .filter((word) => word.length > 0);
+
     if (words.length === 0) return "";
-    
+
     if (words.length === 1) {
       return words[0].slice(0, 2).toUpperCase();
     }
-    
+
     return words
       .slice(0, 2)
-      .map(word => word[0])
-      .join('')
+      .map((word) => word[0])
+      .join("")
       .toUpperCase();
   };
 
   return (
-    <header 
-      className={`sticky top-0 z-50 w-full transition-all duration-300 ${scrolled ? "shadow-lg bg-white" : "bg-white"}`}
+    <header
+      className={`sticky top-0 z-50 w-full transition-all duration-300 ${
+        scrolled ? "shadow-lg bg-white" : "bg-white"
+      }`}
       ref={navbarRef}
     >
       {/* Top Navbar */}
@@ -178,8 +185,8 @@ const Navbar = () => {
             </button>
 
             {/* Logo */}
-            <Link 
-              to="/" 
+            <Link
+              to="/"
               className="text-2xl font-bold text-blue-700 hover:text-blue-800 transition-colors"
               onClick={() => setSelectedCategory("")}
             >
@@ -188,7 +195,7 @@ const Navbar = () => {
           </div>
 
           {/* Search - Desktop */}
-          <form 
+          <form
             onSubmit={handleSearchSubmit}
             className="hidden md:flex flex-1 mx-8 max-w-2xl"
           >
@@ -199,7 +206,7 @@ const Navbar = () => {
                 placeholder="Search products..."
                 className="w-full px-4 py-2 rounded-full border border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-all"
               />
-              <button 
+              <button
                 type="submit"
                 className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-blue-600 transition-colors"
                 aria-label="Search"
@@ -213,27 +220,27 @@ const Navbar = () => {
           <div className="flex items-center space-x-4 md:space-x-6">
             {/* Desktop Navigation Links */}
             <div className="hidden md:flex items-center space-x-6">
-              <Link 
-                to="/" 
+              <Link
+                to="/"
                 className="text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors"
                 onClick={() => setSelectedCategory("")}
               >
                 Home
               </Link>
-              <Link 
-                to="/about" 
+              <Link
+                to="/about"
                 className="text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors"
               >
                 About
               </Link>
-              <Link 
-                to="/contact" 
+              <Link
+                to="/contact"
                 className="text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors"
               >
                 Contact
               </Link>
-              <Link 
-                to="/myorders" 
+              <Link
+                to="/myorders"
                 className="text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors"
               >
                 My Orders
@@ -241,8 +248,8 @@ const Navbar = () => {
             </div>
 
             {/* Wishlist Icon */}
-            <Link 
-              to="/wishlist" 
+            <Link
+              to="/wishlist"
               className="relative p-1 hover:text-blue-600 transition-colors"
               aria-label="Wishlist"
             >
@@ -255,8 +262,8 @@ const Navbar = () => {
             </Link>
 
             {/* Cart Icon */}
-            <Link 
-              to="/cart" 
+            <Link
+              to="/cart"
               className="relative p-1 hover:text-blue-600 transition-colors"
               aria-label="Cart"
             >
@@ -294,8 +301,12 @@ const Navbar = () => {
                       className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 border border-gray-200"
                     >
                       <div className="px-4 py-2 text-sm text-gray-700 border-b border-gray-100">
-                        <div className="font-medium">Hi, {user.name.split(' ')[0]}</div>
-                        <div className="text-xs text-gray-500 truncate">{user.email}</div>
+                        <div className="font-medium">
+                          Hi, {user.name.split(" ")[0]}
+                        </div>
+                        <div className="text-xs text-gray-500 truncate">
+                          {user.email}
+                        </div>
                       </div>
                       <Link
                         to="/account"
@@ -325,8 +336,8 @@ const Navbar = () => {
                 </AnimatePresence>
               </div>
             ) : (
-              <Link 
-                to="/login" 
+              <Link
+                to="/login"
                 className="p-1 hover:text-blue-600 transition-colors"
                 aria-label="Login"
               >
@@ -335,11 +346,11 @@ const Navbar = () => {
             )}
 
             {/* Mobile Search Button */}
-            <button 
+            <button
               onClick={() => {
                 setSearchOpen(!searchOpen);
                 setUserDropdownOpen(false);
-              }} 
+              }}
               className="md:hidden p-1 focus:outline-none"
               aria-label="Search"
             >
@@ -367,7 +378,7 @@ const Navbar = () => {
                     className="w-full px-4 py-2 rounded-full border border-gray-300 focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none"
                     autoFocus
                   />
-                  <button 
+                  <button
                     type="submit"
                     className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-500 hover:text-blue-600"
                   >
@@ -391,8 +402,8 @@ const Navbar = () => {
             className="md:hidden bg-white border-t"
           >
             <div className="container mx-auto px-4 py-2 flex flex-col">
-              <Link 
-                to="/" 
+              <Link
+                to="/"
                 className="py-2 px-2 hover:text-blue-600 transition-colors border-b border-gray-100"
                 onClick={() => {
                   setSelectedCategory("");
@@ -401,29 +412,29 @@ const Navbar = () => {
               >
                 Home
               </Link>
-              <Link 
-                to="/about" 
+              <Link
+                to="/about"
                 className="py-2 px-2 hover:text-blue-600 transition-colors border-b border-gray-100"
                 onClick={closeAllDropdowns}
               >
                 About
               </Link>
-              <Link 
-                to="/contact" 
+              <Link
+                to="/contact"
                 className="py-2 px-2 hover:text-blue-600 transition-colors border-b border-gray-100"
                 onClick={closeAllDropdowns}
               >
                 Contact
               </Link>
-              <Link 
-                to="/orders" 
+              <Link
+                to="/orders"
                 className="py-2 px-2 hover:text-blue-600 transition-colors border-b border-gray-100"
                 onClick={closeAllDropdowns}
               >
                 My Orders
               </Link>
-              <Link 
-                to="/wishlist" 
+              <Link
+                to="/wishlist"
                 className="py-2 px-2 hover:text-blue-600 transition-colors border-b border-gray-100"
                 onClick={closeAllDropdowns}
               >
@@ -431,8 +442,8 @@ const Navbar = () => {
               </Link>
               {user ? (
                 <>
-                  <Link 
-                    to="/account" 
+                  <Link
+                    to="/account"
                     className="py-2 px-2 hover:text-blue-600 transition-colors border-b border-gray-100"
                     onClick={closeAllDropdowns}
                   >
@@ -446,8 +457,8 @@ const Navbar = () => {
                   </button>
                 </>
               ) : (
-                <Link 
-                  to="/login" 
+                <Link
+                  to="/login"
                   className="py-2 px-2 hover:text-blue-600 transition-colors border-b border-gray-100"
                   onClick={closeAllDropdowns}
                 >
@@ -488,7 +499,12 @@ const Navbar = () => {
             </nav>
             <div className="flex-shrink-0 flex items-center text-xs text-gray-500 ml-6">
               <FaPhoneAlt className="mr-2" />
-              <span>Need help? <span className="font-semibold text-gray-800">+84 1234 555 77</span></span>
+              <span>
+                Need help?{" "}
+                <span className="font-semibold text-gray-800">
+                  +84 1234 555 77
+                </span>
+              </span>
             </div>
           </div>
 
@@ -540,7 +556,12 @@ const Navbar = () => {
                   </div>
                   <div className="flex items-center text-xs text-gray-500 mt-3 px-2 py-1">
                     <FaPhoneAlt className="mr-2" />
-                    <span>Need help? <span className="font-semibold text-gray-800">+84 1234 555 77</span></span>
+                    <span>
+                      Need help?{" "}
+                      <span className="font-semibold text-gray-800">
+                        +84 1234 555 77
+                      </span>
+                    </span>
                   </div>
                 </motion.div>
               )}

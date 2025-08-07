@@ -26,7 +26,6 @@ const Account = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
 
-
   const navigate = useNavigate();
 
   const handleChange = (e) => {
@@ -101,6 +100,7 @@ const Account = () => {
           icon: "success",
           confirmButtonText: "OK",
           confirmButtonColor: "#3085d6",
+          scrollbarPadding: false,
         });
       } else {
         await Swal.fire({
@@ -109,6 +109,7 @@ const Account = () => {
           icon: "error",
           confirmButtonText: "OK",
           confirmButtonColor: "#d33",
+          scrollbarPadding: false,
         });
       }
     } catch (error) {
@@ -119,6 +120,7 @@ const Account = () => {
         icon: "error",
         confirmButtonText: "OK",
         confirmButtonColor: "#d33",
+        scrollbarPadding: false,
       });
     } finally {
       setIsSubmitting(false);
