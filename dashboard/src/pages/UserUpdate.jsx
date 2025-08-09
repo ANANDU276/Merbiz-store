@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { FaSpinner, FaSave, FaTimes } from 'react-icons/fa';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 
 function UserUpdate() {
   const { id } = useParams();
@@ -21,7 +23,7 @@ function UserUpdate() {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const res = await axios.get(`http://localhost:5000/api/users/${id}`);
+        const res = await axios.get(`${API_BASE_URL}/users/${id}`);
         setUser(res.data);
       } catch (err) {
         setError(err.response?.data?.message || 'Failed to fetch user');

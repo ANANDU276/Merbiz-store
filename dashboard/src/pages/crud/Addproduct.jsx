@@ -11,6 +11,8 @@ import { Link, useNavigate } from "react-router-dom";
 
 const CLOUDINARY_UPLOAD_PRESET = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
 const CLOUDINARY_CLOUD_NAME = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 
 export default function AddProduct() {
   const navigate = useNavigate();
@@ -117,7 +119,7 @@ export default function AddProduct() {
 
     setSubmitting(true);
     try {
-      await axios.post("http://localhost:5000/api/products", formData);
+      await axios.post(`${API_BASE_URL}/products`, formData);
       alert("Product added successfully!");
       navigate("/products");
     } catch (err) {

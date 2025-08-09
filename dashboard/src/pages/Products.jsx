@@ -11,6 +11,8 @@ import {
 } from "react-icons/fa";
 
 import DefaultProductImage  from "../assets/default-product-image.jpg"
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 
 
 
@@ -24,7 +26,7 @@ function Products() {
   // Fetch products from backend
   const fetchProducts = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/api/products");
+      const response = await axios.get(`${API_BASE_URL}/products`);
       setAllProducts(response.data);
       setProducts(response.data);
     } catch (error) {
@@ -36,7 +38,7 @@ function Products() {
 const handleDelete = async (productId) => {
   if (!window.confirm("Are you sure you want to delete this product?")) return;
   try {
-    await axios.delete(`http://localhost:5000/api/products/${productId}`);
+    await axios.delete(`${API_BASE_URL}/products/${productId}`);
     setAllProducts((prev) => prev.filter((p) => p._id !== productId));
   } catch (error) {
     console.error("Failed to delete product", error);

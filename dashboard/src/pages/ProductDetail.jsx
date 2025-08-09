@@ -12,6 +12,8 @@ import {
   FaSpinner
 } from "react-icons/fa";
 import { toast } from "react-toastify";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 
 export default function ProductDetail() {
   const { id } = useParams();
@@ -25,7 +27,7 @@ export default function ProductDetail() {
     const fetchProduct = async () => {
       try {
         setLoading(true);
-        const res = await axios.get(`http://localhost:5000/api/products/${id}`);
+        const res = await axios.get(`${API_BASE_URL}/products/${id}`);
         setProduct(res.data);
       } catch (err) {
         setError(
@@ -43,7 +45,7 @@ export default function ProductDetail() {
     if (window.confirm("Are you sure you want to delete this product?")) {
       try {
         setDeleting(true);
-        await axios.delete(`http://localhost:5000/api/products/${id}`);
+        await axios.delete(`${API_BASE_URL}/products/${id}`);
         toast.success("Product deleted successfully");
         navigate("/products");
       } catch (err) {

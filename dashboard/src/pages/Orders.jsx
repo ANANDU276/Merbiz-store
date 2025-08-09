@@ -10,6 +10,8 @@ import {
   FiEdit,
   FiRefreshCw,
 } from "react-icons/fi";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 
 function Orders() {
   const [orders, setOrders] = useState([]);
@@ -23,7 +25,7 @@ function Orders() {
   useEffect(() => {
     const fetchOrders = async () => {
       try {
-        const res = await axios.get("http://localhost:5000/api/order");
+        const res = await axios.get(`${API_BASE_URL}/order`);
         setOrders(res.data);
       } catch (err) {
         setError("Failed to fetch orders");

@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 
 function UserDetail() {
   const { id } = useParams();
@@ -10,7 +12,7 @@ function UserDetail() {
   useEffect(() => {
     const fetchUser = async () => {
       try {
-        const res = await fetch(`http://localhost:5000/api/users/${id}`);
+        const res = await fetch(`${API_BASE_URL}/users/${id}`);
         if (!res.ok) throw new Error('User not found');
         const data = await res.json();
         setUser(data);

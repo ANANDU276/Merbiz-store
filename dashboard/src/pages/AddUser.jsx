@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { FaSpinner, FaSave, FaArrowLeft, FaEye, FaEyeSlash } from 'react-icons/fa';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 
 function AddUser() {
   const navigate = useNavigate();
@@ -38,7 +40,7 @@ function AddUser() {
     }
 
     try {
-      const response = await axios.post('http://localhost:5000/api/users', user);
+      const response = await axios.post(`${API_BASE_URL}/users`, user);
       navigate(`/users/userdetail/${response.data._id}`);
     } catch (err) {
       setError(err.response?.data?.message || 'Failed to create user');

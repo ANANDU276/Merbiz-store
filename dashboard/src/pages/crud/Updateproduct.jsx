@@ -12,6 +12,8 @@ import {
 
 const CLOUDINARY_UPLOAD_PRESET = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
 const CLOUDINARY_CLOUD_NAME = import.meta.env.VITE_CLOUDINARY_CLOUD_NAME;
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
+
 
 export default function UpdateProduct() {
   const { id } = useParams();
@@ -38,7 +40,7 @@ export default function UpdateProduct() {
     const fetchProduct = async () => {
       try {
         const response = await axios.get(
-          `http://localhost:5000/api/products/${id}`
+          `${API_BASE_URL}/products/${id}`
         );
         // Convert the single image to an array if needed
         const productData = response.data;
@@ -151,7 +153,7 @@ export default function UpdateProduct() {
 
     setSubmitting(true);
     try {
-      await axios.put(`http://localhost:5000/api/products/${id}`, formData);
+      await axios.put(`${API_BASE_URL}/products/${id}`, formData);
       navigate("/products", { state: { success: "Product updated successfully!" } });
     } catch (err) {
       console.error("Error updating product:", err);

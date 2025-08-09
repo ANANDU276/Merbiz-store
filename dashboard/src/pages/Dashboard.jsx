@@ -9,6 +9,8 @@ import {
   FiChevronRight,
 } from "react-icons/fi";
 
+
+
 export default function Dashboard() {
   // Calculate stats from data
   const totalRevenue = orders.reduce((sum, order) => sum + order.total, 0);
