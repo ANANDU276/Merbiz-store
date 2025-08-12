@@ -365,7 +365,7 @@ function StatusBadge({ status }) {
     Shipped: "bg-blue-100 text-blue-800",
     Processing: "bg-yellow-100 text-yellow-800",
     Cancelled: "bg-red-100 text-red-800",
-    Pending: "bg-purple-100 text-purple-800",
+    OrderPlaced: "bg-purple-100 text-purple-800",
   };
 
   const statusIcons = {
@@ -373,7 +373,7 @@ function StatusBadge({ status }) {
     Shipped: "🚚",
     Processing: "⏳",
     Cancelled: "✕",
-    Pending: "⋯",
+    OrderPlaced: "⋯",
   };
 
   return (

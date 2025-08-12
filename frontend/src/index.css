@@ -6,6 +6,15 @@
     font-weight: 400;
   }
 }
+/* For modern browsers */
+::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Edge */
+}
+
+html, body {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and older Edge */
+}
 
 html {
   scroll-behavior: auto;

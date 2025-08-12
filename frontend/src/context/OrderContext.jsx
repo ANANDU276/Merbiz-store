@@ -5,9 +5,7 @@ import AuthContext from "./AuthContext";
 
 const OrderContext = createContext();
 
-
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL;
-
 
 export const OrderProvider = ({ children }) => {
   const { user, loading: authLoading } = useContext(AuthContext);
@@ -29,6 +27,7 @@ export const OrderProvider = ({ children }) => {
     }
   }, [authLoading, userEmail]);
 
+  // ✅ Use plural /orders to match backend
   const fetchOrders = async (email) => {
     setLoading(true);
     try {
@@ -48,6 +47,7 @@ export const OrderProvider = ({ children }) => {
     }
   };
 
+  // ✅ Use plural /orders to match backend
   const createOrder = async (orderData) => {
     setCreateLoading(true);
     setCreateError(null);
@@ -69,12 +69,14 @@ export const OrderProvider = ({ children }) => {
     }
   };
 
-  const requestReturn = async (orderId, reason) => {
+  // ✅ Debug logs & plural /orders
+  const requestReturn = async (orderId, itemId, reason) => {
     setReturnLoading(true);
     setReturnError(null);
     try {
+      console.log("Requesting return:", { orderId, itemId, reason });
       const res = await axios.put(
-        `${API_BASE_URL}/order/${orderId}/return`,
+        `${API_BASE_URL}/order/${orderId}/items/${itemId}/return`,
         { reason },
         {
           headers: {
@@ -102,19 +104,15 @@ export const OrderProvider = ({ children }) => {
     return orders.find((order) => order._id === orderId);
   };
 
-  const canRequestReturn = (order) => {
-    if (!order) return false;
-    
-    // Check if return already requested
-    if (order.returnRequest?.requested) return false;
-    
-    // Check if order is within return window (e.g., 30 days)
+  // ✅ Updated to work per item instead of per order
+  const canRequestReturn = (item, orderDateStr) => {
+    if (!item) return false;
+    if (item.returnRequest?.requested) return false;
     const returnWindowDays = 30;
-    const orderDate = new Date(order.createdAt);
+    const orderDate = new Date(orderDateStr);
     const returnDeadline = new Date(
       orderDate.setDate(orderDate.getDate() + returnWindowDays)
     );
-    
     return new Date() <= returnDeadline;
   };
 

@@ -23,45 +23,47 @@ import About from "./pages/About";
 import Contact from "./pages/Contact";
 import ScrollToTop from "./components/ScrollToTop";
 import { AddressProvider } from "./context/AddressContext";
+import OrderDetails from "./pages/OrderDetails";
 
 function App() {
   return (
     <AuthProvider>
       <AddressProvider>
-      <CartProvider>
-        <WishlistProvider>
-          <OrderProvider>
-            <Router>
-              <ScrollToTop />
-              <Navbar />
-              <Toaster position="top-right" />
-              <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/products/:id" element={<ProductDetails />} />
-                <Route path="/cart" element={<Cart />} />
-                <Route path="/account" element={<Account />} />
-                <Route
-                  path="/checkout"
-                  element={
-                    <PrivateRoute>
-                      <Checkout />
-                    </PrivateRoute>
-                  }
-                />
-                <Route path="/productpage" element={<ProductsPage />} />
-                <Route path="/login" element={<Login />} />
-                <Route path="/register" element={<Register />} />
-                <Route path="/wishlist" element={<Wishlist />} />
-                <Route path="/ordersuccess" element={<OrderSuccess />} />
-                <Route path="/myorders" element={<MyOrders />} />
-                <Route path="/about" element={<About />} />
-                <Route path="/contact" element={<Contact />} />
-              </Routes>
-              <Footer />
-            </Router>
-          </OrderProvider>
-        </WishlistProvider>
-      </CartProvider>
+        <CartProvider>
+          <WishlistProvider>
+            <OrderProvider>
+              <Router>
+                <ScrollToTop />
+                <Navbar />
+                <Toaster position="top-right" />
+                <Routes>
+                  <Route path="/" element={<Home />} />
+                  <Route path="/products/:id" element={<ProductDetails />} />
+                  <Route path="/cart" element={<Cart />} />
+                  <Route path="/account" element={<Account />} />
+                  <Route
+                    path="/checkout"
+                    element={
+                      <PrivateRoute>
+                        <Checkout />
+                      </PrivateRoute>
+                    }
+                  />
+                  <Route path="/productpage" element={<ProductsPage />} />
+                  <Route path="/login" element={<Login />} />
+                  <Route path="/register" element={<Register />} />
+                  <Route path="/wishlist" element={<Wishlist />} />
+                  <Route path="/ordersuccess" element={<OrderSuccess />} />
+                  <Route path="/myorders" element={<MyOrders />} />
+                  <Route path="/about" element={<About />} />
+                  <Route path="/contact" element={<Contact />} />
+                  <Route path="/myorders/:orderId" element={<OrderDetails />} />
+                </Routes>
+                <Footer />
+              </Router>
+            </OrderProvider>
+          </WishlistProvider>
+        </CartProvider>
       </AddressProvider>
     </AuthProvider>
   );
