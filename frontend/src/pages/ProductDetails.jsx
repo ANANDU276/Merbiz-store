@@ -1,14 +1,19 @@
 import React, { useEffect, useState } from "react";
-import { Link, useParams } from "react-router-dom";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import { fetchProductById } from "../api/productsApi";
-import { ArrowLeft, ChevronLeft, ChevronRight } from "lucide-react";
+import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useCart } from "../context/CartContext";
+import toast from "react-hot-toast";
 
 const ProductDetails = () => {
   const { id } = useParams();
+  const navigate = useNavigate();
   const [product, setProduct] = useState(null);
   const [quantity, setQuantity] = useState(1);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
   const [error, setError] = useState(null);
+
+  const { addToCart } = useCart();
 
   useEffect(() => {
     const getProduct = async () => {
@@ -48,6 +53,28 @@ const ProductDetails = () => {
     });
   };
 
+  const handleAddToCart = () => {
+    if (product.stock > 0) {
+      addToCart({ ...product, quantity });
+      toast.success(
+        `${product.name || "Product"} (x${quantity}) added to cart!`
+      );
+    } else {
+      toast.error(`${product.name || "Product"} is out of stock!`);
+    }
+  };
+
+  const handleBuyNow = () => {
+    if (product.stock > 0) {
+      addToCart({ ...product, quantity });
+      navigate("/cart"); // redirect after adding
+    } else {
+      toast.error(`${product.name || "Product"} is out of stock!`);
+    }
+  };
+
+
+
   if (error)
     return (
       <div className="px-4 py-10 mx-auto text-center text-red-500">
@@ -84,7 +111,7 @@ const ProductDetails = () => {
         <div className="w-full lg:w-1/2">
           <div className="bg-white p-4 rounded-lg shadow-sm mb-4">
             <div className="flex flex-col-reverse sm:flex-row gap-4">
-              {/* Thumbnails - exactly 3 images */}
+              {/* Thumbnails */}
               <div className="flex sm:flex-col gap-2">
                 {product.image.map((img, idx) => (
                   <button
@@ -161,7 +188,7 @@ const ProductDetails = () => {
               <span className="text-xl font-bold text-blue-600">
                 ₹{product.price.toLocaleString()}
               </span>
-              {product.stock && (
+              {product.stock !== undefined && (
                 <span
                   className={`text-xs font-medium px-2 py-0.5 rounded ${
                     product.stock > 0
@@ -221,7 +248,9 @@ const ProductDetails = () => {
                 <button
                   className="w-10 h-10 flex items-center justify-center text-gray-600 hover:bg-gray-50"
                   onClick={() => handleQuantityChange("increment")}
-                  disabled={product.stock !== undefined && quantity >= product.stock}
+                  disabled={
+                    product.stock !== undefined && quantity >= product.stock
+                  }
                   aria-label="Increase quantity"
                 >
                   +
@@ -236,14 +265,16 @@ const ProductDetails = () => {
 
             {/* Action Buttons */}
             <div className="flex flex-col sm:flex-row gap-3 mb-6">
-              <button 
+              <button
                 className="flex-1 bg-blue-600 text-white py-3 rounded-md font-medium hover:bg-blue-700 transition-colors"
                 disabled={product.stock === 0}
+                onClick={handleBuyNow}
               >
                 Buy Now
               </button>
-              <button 
+              <button
                 className="flex-1 bg-white border border-blue-600 text-blue-600 py-3 rounded-md font-medium hover:bg-blue-50 transition-colors"
+                onClick={handleAddToCart}
                 disabled={product.stock === 0}
               >
                 Add to Cart

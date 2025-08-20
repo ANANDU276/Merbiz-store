@@ -44,32 +44,35 @@ export const CartProvider = ({ children }) => {
   }, [userId, authLoading]);
 
   const addToCart = (product) => {
-    setCart((prevCart) => {
-      const existing = prevCart.find((item) => item._id === product._id);
-      return existing
-        ? prevCart.map((item) =>
-            item._id === product._id
-              ? { ...item, quantity: item.quantity + 1 }
-              : item
-          )
-        : [...prevCart, { ...product, quantity: 1 }];
-    });
+  const qtyToAdd = product.quantity ?? 1;
 
-    if (userId) {
-      axios
-        .post(`${API_BASE_URL}/cart`, {
-          userId,
-          product: {
-            productId: product._id,
-            quantity: 1,
-          },
-        })
-        .then(() => console.log("🛒 addToCart synced to server"))
-        .catch((err) =>
-          console.error("❌ addToCart sync failed:", err.response?.data || err.message)
-        );
-    }
-  };
+  setCart((prevCart) => {
+    const existing = prevCart.find((item) => item._id === product._id);
+    return existing
+      ? prevCart.map((item) =>
+          item._id === product._id
+            ? { ...item, quantity: item.quantity + qtyToAdd } // ✅ add selected qty
+            : item
+        )
+      : [...prevCart, { ...product, quantity: qtyToAdd }];   // ✅ set initial qty
+  });
+
+  if (userId) {
+    axios
+      .post(`${API_BASE_URL}/cart`, {
+        userId,
+        product: {
+          productId: product._id,
+          quantity: qtyToAdd, // ✅ send correct qty to server
+        },
+      })
+      .then(() => console.log("🛒 addToCart synced to server"))
+      .catch((err) =>
+        console.error("❌ addToCart sync failed:", err.response?.data || err.message)
+      );
+  }
+};
+
 
   const removeFromCart = (id) => {
     setCart((prev) => prev.filter((item) => item._id !== id));
