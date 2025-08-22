@@ -47,6 +47,7 @@ const Navbar = () => {
   const dropdownRef = useRef(null);
   const userButtonRef = useRef(null);
   const navbarRef = useRef(null);
+  const categoryButtonRef = useRef(null);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -61,9 +62,10 @@ const Navbar = () => {
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 
-  // Click outside handler for user dropdown
+  // Click outside handlers for dropdowns
   useEffect(() => {
     const handleClickOutside = (event) => {
+      // User dropdown
       if (
         userDropdownOpen &&
         dropdownRef.current &&
@@ -73,13 +75,23 @@ const Navbar = () => {
       ) {
         setUserDropdownOpen(false);
       }
+      
+      // Category dropdown
+      if (
+        categoryOpen &&
+        categoryButtonRef.current &&
+        !categoryButtonRef.current.contains(event.target) &&
+        !event.target.closest('.mobile-category-menu')
+      ) {
+        setCategoryOpen(false);
+      }
     };
 
     document.addEventListener("mousedown", handleClickOutside);
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
     };
-  }, [userDropdownOpen]);
+  }, [userDropdownOpen, categoryOpen]);
 
   const toggleMenu = () => {
     setMenuOpen(!menuOpen);
@@ -294,14 +306,14 @@ const Navbar = () => {
                   {userDropdownOpen && (
                     <motion.div
                       ref={dropdownRef}
-                      initial={{ opacity: 0, y: -10 }}
-                      animate={{ opacity: 1, y: 0 }}
-                      exit={{ opacity: 0, y: -10 }}
-                      transition={{ duration: 0.2 }}
-                      className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 border border-gray-200"
+                      initial={{ opacity: 0, y: 10, scale: 0.95 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: 10, scale: 0.95 }}
+                      transition={{ duration: 0.15, ease: "easeOut" }}
+                      className="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl py-1 z-50 border border-gray-200 overflow-hidden"
                     >
-                      <div className="px-4 py-2 text-sm text-gray-700 border-b border-gray-100">
-                        <div className="font-medium">
+                      <div className="px-4 py-2 text-sm text-gray-700 border-b border-gray-100 bg-gray-50">
+                        <div className="font-medium truncate">
                           Hi, {user.name.split(" ")[0]}
                         </div>
                         <div className="text-xs text-gray-500 truncate">
@@ -310,25 +322,25 @@ const Navbar = () => {
                       </div>
                       <Link
                         to="/account"
-                        className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 transition-colors"
                         onClick={closeAllDropdowns}
                       >
-                        <FaUserCircle className="mr-2" />
+                        <FaUserCircle className="mr-3 text-gray-500" />
                         My Account
                       </Link>
                       <Link
                         to="/account/settings"
-                        className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        className="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 transition-colors"
                         onClick={closeAllDropdowns}
                       >
-                        <FaCog className="mr-2" />
+                        <FaCog className="mr-3 text-gray-500" />
                         Settings
                       </Link>
                       <button
                         onClick={handleLogout}
-                        className="w-full text-left flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        className="w-full text-left flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-blue-50 transition-colors border-t border-gray-100"
                       >
-                        <FaSignOutAlt className="mr-2" />
+                        <FaSignOutAlt className="mr-3 text-gray-500" />
                         Logout
                       </button>
                     </motion.div>
@@ -350,6 +362,7 @@ const Navbar = () => {
               onClick={() => {
                 setSearchOpen(!searchOpen);
                 setUserDropdownOpen(false);
+                setCategoryOpen(false);
               }}
               className="md:hidden p-1 focus:outline-none"
               aria-label="Search"
@@ -399,12 +412,12 @@ const Navbar = () => {
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.2 }}
-            className="md:hidden bg-white border-t"
+            className="md:hidden bg-white border-t border-gray-200 shadow-lg"
           >
-            <div className="container mx-auto px-4 py-2 flex flex-col">
+            <div className="container mx-auto px-4 py-3 flex flex-col">
               <Link
                 to="/"
-                className="py-2 px-2 hover:text-blue-600 transition-colors border-b border-gray-100"
+                className="py-3 px-3 hover:text-blue-600 transition-colors border-b border-gray-100 hover:bg-blue-50 rounded-md"
                 onClick={() => {
                   setSelectedCategory("");
                   closeAllDropdowns();
@@ -414,28 +427,28 @@ const Navbar = () => {
               </Link>
               <Link
                 to="/about"
-                className="py-2 px-2 hover:text-blue-600 transition-colors border-b border-gray-100"
+                className="py-3 px-3 hover:text-blue-600 transition-colors border-b border-gray-100 hover:bg-blue-50 rounded-md"
                 onClick={closeAllDropdowns}
               >
                 About
               </Link>
               <Link
                 to="/contact"
-                className="py-2 px-2 hover:text-blue-600 transition-colors border-b border-gray-100"
+                className="py-3 px-3 hover:text-blue-600 transition-colors border-b border-gray-100 hover:bg-blue-50 rounded-md"
                 onClick={closeAllDropdowns}
               >
                 Contact
               </Link>
               <Link
-                to="/orders"
-                className="py-2 px-2 hover:text-blue-600 transition-colors border-b border-gray-100"
+                to="/myorders"
+                className="py-3 px-3 hover:text-blue-600 transition-colors border-b border-gray-100 hover:bg-blue-50 rounded-md"
                 onClick={closeAllDropdowns}
               >
                 My Orders
               </Link>
               <Link
                 to="/wishlist"
-                className="py-2 px-2 hover:text-blue-600 transition-colors border-b border-gray-100"
+                className="py-3 px-3 hover:text-blue-600 transition-colors border-b border-gray-100 hover:bg-blue-50 rounded-md"
                 onClick={closeAllDropdowns}
               >
                 My Wishlist
@@ -444,14 +457,14 @@ const Navbar = () => {
                 <>
                   <Link
                     to="/account"
-                    className="py-2 px-2 hover:text-blue-600 transition-colors border-b border-gray-100"
+                    className="py-3 px-3 hover:text-blue-600 transition-colors border-b border-gray-100 hover:bg-blue-50 rounded-md"
                     onClick={closeAllDropdowns}
                   >
                     My Account
                   </Link>
                   <button
                     onClick={handleLogout}
-                    className="py-2 px-2 text-left hover:text-blue-600 transition-colors border-b border-gray-100"
+                    className="py-3 px-3 text-left hover:text-blue-600 transition-colors hover:bg-blue-50 rounded-md"
                   >
                     Logout
                   </button>
@@ -459,7 +472,7 @@ const Navbar = () => {
               ) : (
                 <Link
                   to="/login"
-                  className="py-2 px-2 hover:text-blue-600 transition-colors border-b border-gray-100"
+                  className="py-3 px-3 hover:text-blue-600 transition-colors border-b border-gray-100 hover:bg-blue-50 rounded-md"
                   onClick={closeAllDropdowns}
                 >
                   Login / Register
@@ -482,14 +495,14 @@ const Navbar = () => {
                     <Link
                       to={item.path}
                       onClick={() => setSelectedCategory(item.category)}
-                      className="flex-shrink-0 text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors py-2"
+                      className="flex-shrink-0 text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors py-2 px-3 rounded-md hover:bg-blue-50"
                     >
                       {item.name}
                     </Link>
                   ) : (
                     <Link
                       to={item.path}
-                      className="flex-shrink-0 text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors py-2"
+                      className="flex-shrink-0 text-sm font-medium text-gray-700 hover:text-blue-600 transition-colors py-2 px-3 rounded-md hover:bg-blue-50"
                     >
                       {item.name}
                     </Link>
@@ -511,7 +524,8 @@ const Navbar = () => {
           {/* Mobile Categories Toggle */}
           <div className="md:hidden px-4 py-2">
             <button
-              className="flex items-center text-sm text-blue-600 font-medium w-full justify-between focus:outline-none"
+              ref={categoryButtonRef}
+              className="flex items-center text-sm text-blue-600 font-medium w-full justify-between focus:outline-none p-2 bg-white rounded-lg border border-gray-200 shadow-sm"
               onClick={toggleCategories}
               aria-expanded={categoryOpen}
             >
@@ -526,9 +540,9 @@ const Navbar = () => {
                   animate={{ opacity: 1, height: "auto" }}
                   exit={{ opacity: 0, height: 0 }}
                   transition={{ duration: 0.2 }}
-                  className="mt-2"
+                  className="mt-2 mobile-category-menu"
                 >
-                  <div className="flex flex-col gap-1 text-sm text-gray-800">
+                  <div className="flex flex-col gap-1 text-sm text-gray-800 bg-white rounded-lg border border-gray-200 p-2 shadow-sm">
                     {categories.map((item, index) => (
                       <React.Fragment key={index}>
                         {item.category ? (
@@ -538,7 +552,7 @@ const Navbar = () => {
                               setSelectedCategory(item.category);
                               closeAllDropdowns();
                             }}
-                            className="hover:text-blue-600 px-2 py-1 rounded hover:bg-gray-100"
+                            className="hover:text-blue-600 px-3 py-2 rounded-md hover:bg-blue-50 transition-colors"
                           >
                             {item.name}
                           </Link>
@@ -546,7 +560,7 @@ const Navbar = () => {
                           <Link
                             to={item.path}
                             onClick={closeAllDropdowns}
-                            className="hover:text-blue-600 px-2 py-1 rounded hover:bg-gray-100"
+                            className="hover:text-blue-600 px-3 py-2 rounded-md hover:bg-blue-50 transition-colors"
                           >
                             {item.name}
                           </Link>
@@ -554,7 +568,7 @@ const Navbar = () => {
                       </React.Fragment>
                     ))}
                   </div>
-                  <div className="flex items-center text-xs text-gray-500 mt-3 px-2 py-1">
+                  <div className="flex items-center text-xs text-gray-500 mt-3 px-3 py-2 bg-gray-50 rounded-md">
                     <FaPhoneAlt className="mr-2" />
                     <span>
                       Need help?{" "}

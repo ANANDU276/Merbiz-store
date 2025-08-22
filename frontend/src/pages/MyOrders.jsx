@@ -73,25 +73,12 @@ const MyOrders = () => {
         })
     : [];
 
-  const getOrderCountByStatus = (status) => {
-    if (!orders) return 0;
-    return orders.filter(order => order.status.toLowerCase() === status.toLowerCase()).length;
-  };
-
   if (loading) {
     return (
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
           <div className="h-8 w-48 bg-gray-200 rounded animate-pulse"></div>
           <div className="h-4 w-64 bg-gray-200 rounded animate-pulse mt-2"></div>
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-          {[...Array(4)].map((_, i) => (
-            <div key={i} className="bg-white rounded-lg shadow p-4">
-              <div className="h-6 w-24 bg-gray-200 rounded animate-pulse"></div>
-              <div className="h-8 w-16 bg-gray-200 rounded animate-pulse mt-2"></div>
-            </div>
-          ))}
         </div>
         <div className="space-y-6">
           {[...Array(3)].map((_, i) => (
@@ -189,62 +176,6 @@ const MyOrders = () => {
         <p className="mt-2 text-gray-600">View and manage your order history</p>
       </motion.div>
 
-      {/* Order Summary Cards */}
-      <motion.div 
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.2 }}
-        className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8"
-      >
-        <div className="bg-white rounded-lg shadow p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-gray-500">Total Orders</p>
-              <p className="mt-1 text-3xl font-semibold text-gray-900">{orders.length}</p>
-            </div>
-            <div className="p-3 rounded-full bg-indigo-100 text-indigo-600">
-              <FiShoppingBag className="h-6 w-6" />
-            </div>
-          </div>
-        </div>
-        
-        <div className="bg-white rounded-lg shadow p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-gray-500">Processing</p>
-              <p className="mt-1 text-3xl font-semibold text-gray-900">{getOrderCountByStatus('processing')}</p>
-            </div>
-            <div className="p-3 rounded-full bg-purple-100 text-purple-600">
-              <FiPackage className="h-6 w-6" />
-            </div>
-          </div>
-        </div>
-        
-        <div className="bg-white rounded-lg shadow p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-gray-500">Shipped</p>
-              <p className="mt-1 text-3xl font-semibold text-gray-900">{getOrderCountByStatus('shipped')}</p>
-            </div>
-            <div className="p-3 rounded-full bg-blue-100 text-blue-600">
-              <FiTruck className="h-6 w-6" />
-            </div>
-          </div>
-        </div>
-        
-        <div className="bg-white rounded-lg shadow p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-gray-500">Delivered</p>
-              <p className="mt-1 text-3xl font-semibold text-gray-900">{getOrderCountByStatus('delivered')}</p>
-            </div>
-            <div className="p-3 rounded-full bg-green-100 text-green-600">
-              <FiCheckCircle className="h-6 w-6" />
-            </div>
-          </div>
-        </div>
-      </motion.div>
-
       {/* Filters and Search */}
       <motion.div 
         initial={{ opacity: 0, y: -20 }}
@@ -304,7 +235,7 @@ const MyOrders = () => {
             
             <div className="relative">
               <select
-                className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md leading-5 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm"
+                className="appearance-none block w-full px-3 py-2 border border-gray-300 rounded-md leading-5 bg-white focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:text-sm"
                 value={sortedBy}
                 onChange={(e) => setSortedBy(e.target.value)}
               >

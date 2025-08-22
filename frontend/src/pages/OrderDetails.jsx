@@ -21,6 +21,7 @@ import {
   FiMessageSquare,
   FiHelpCircle,
 } from "react-icons/fi";
+import { motion, AnimatePresence } from "framer-motion";
 
 const OrderDetails = () => {
   const { orderId } = useParams();
@@ -110,35 +111,35 @@ const OrderDetails = () => {
     switch (status.toLowerCase()) {
       case "processing":
         return {
-          color: "bg-blue-100 text-blue-800",
+          color: "bg-blue-100 text-blue-700",
           icon: <FiRefreshCw className="mr-2 animate-spin" />,
           text: "Processing",
           description: "Your order is being prepared for shipment",
         };
       case "shipped":
         return {
-          color: "bg-purple-100 text-purple-800",
+          color: "bg-purple-100 text-purple-700",
           icon: <FiTruck className="mr-2" />,
           text: "Shipped",
           description: "Your order is on its way",
         };
       case "delivered":
         return {
-          color: "bg-green-100 text-green-800",
+          color: "bg-green-100 text-green-700",
           icon: <FiCheckCircle className="mr-2" />,
           text: "Delivered",
           description: "Your order has been delivered",
         };
       case "cancelled":
         return {
-          color: "bg-red-100 text-red-800",
+          color: "bg-red-100 text-red-700",
           icon: <FiXCircle className="mr-2" />,
           text: "Cancelled",
           description: "Your order has been cancelled",
         };
       default:
         return {
-          color: "bg-gray-100 text-gray-800",
+          color: "bg-gray-100 text-gray-700",
           icon: <FiClock className="mr-2" />,
           text: "Pending",
           description: "Your order is being processed",
@@ -149,10 +150,14 @@ const OrderDetails = () => {
   if (loading || !order) {
     return (
       <div className="flex justify-center items-center min-h-[300px]">
-        <div className="animate-pulse flex flex-col items-center">
-          <div className="h-12 w-12 bg-gray-200 rounded-full mb-4"></div>
-          <div className="h-4 bg-gray-200 rounded w-48"></div>
-        </div>
+        <motion.div 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          className="animate-pulse flex flex-col items-center"
+        >
+          <div className="h-12 w-12 bg-gray-100 rounded-full mb-4"></div>
+          <div className="h-4 bg-gray-100 rounded w-48"></div>
+        </motion.div>
       </div>
     );
   }
@@ -169,7 +174,12 @@ const OrderDetails = () => {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-      <div className="mb-6">
+      <motion.div 
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3 }}
+        className="mb-6"
+      >
         <Link
           to="/myorders"
           className="inline-flex items-center text-indigo-600 hover:text-indigo-800 transition-colors duration-200"
@@ -177,30 +187,42 @@ const OrderDetails = () => {
           <FiArrowLeft className="mr-2" />
           Back to My Orders
         </Link>
-      </div>
+      </motion.div>
 
-      <div className="mb-8 flex flex-col md:flex-row md:items-center md:justify-between">
+      <motion.div 
+        initial={{ opacity: 0, y: -10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.3, delay: 0.1 }}
+        className="mb-8 flex flex-col md:flex-row md:items-center md:justify-between"
+      >
         <div>
           <h1 className="text-3xl font-bold text-gray-900">Order Details</h1>
           <div className="mt-2 flex items-center space-x-4">
-            <span
+            <motion.span
+              initial={{ scale: 0.9 }}
+              animate={{ scale: 1 }}
               className={`inline-flex items-center px-3 py-1 rounded-full text-sm font-medium ${statusDetails.color}`}
             >
               {statusDetails.icon}
               {statusDetails.text}
-            </span>
+            </motion.span>
             <p className="text-gray-600">
               Order #<span className="font-medium">{order._id.slice(18,25)}</span>
             </p>
           </div>
         </div>
-      </div>
+      </motion.div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Order Items */}
         <div className="lg:col-span-2 space-y-6">
           {/* Order Status Timeline */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: 0.2 }}
+            className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden"
+          >
             <div className="px-6 py-4 border-b border-gray-100">
               <h2 className="text-lg font-medium text-gray-900">
                 Order Status
@@ -208,10 +230,15 @@ const OrderDetails = () => {
             </div>
             <div className="p-6">
               <div className="relative">
-                <div className="absolute left-4 top-0 h-full w-0.5 bg-gray-200"></div>
+                <div className="absolute left-4 top-0 h-full w-0.5 bg-gray-100"></div>
 
                 {/* Order Placed */}
-                <div className="relative pb-8">
+                <motion.div 
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.3, delay: 0.3 }}
+                  className="relative pb-8"
+                >
                   <div className="flex items-center">
                     <div className="flex-shrink-0 h-8 w-8 rounded-full bg-indigo-500 flex items-center justify-center text-white">
                       <FiShoppingBag className="h-4 w-4" />
@@ -231,10 +258,15 @@ const OrderDetails = () => {
                       </p>
                     </div>
                   </div>
-                </div>
+                </motion.div>
 
                 {/* Processing */}
-                <div className="relative pb-8">
+                <motion.div 
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.3, delay: 0.4 }}
+                  className="relative pb-8"
+                >
                   <div className="flex items-center">
                     <div
                       className={`flex-shrink-0 h-8 w-8 rounded-full flex items-center justify-center 
@@ -243,7 +275,7 @@ const OrderDetails = () => {
                           order.status.toLowerCase()
                         )
                           ? "bg-indigo-500 text-white"
-                          : "bg-gray-200 text-gray-500"
+                          : "bg-gray-100 text-gray-400"
                       }`}
                     >
                       <FiRefreshCw className="h-4 w-4" />
@@ -259,10 +291,15 @@ const OrderDetails = () => {
                       )}
                     </div>
                   </div>
-                </div>
+                </motion.div>
 
                 {/* Shipped */}
-                <div className="relative pb-8">
+                <motion.div 
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.3, delay: 0.5 }}
+                  className="relative pb-8"
+                >
                   <div className="flex items-center">
                     <div
                       className={`flex-shrink-0 h-8 w-8 rounded-full flex items-center justify-center 
@@ -271,7 +308,7 @@ const OrderDetails = () => {
                           order.status.toLowerCase()
                         )
                           ? "bg-indigo-500 text-white"
-                          : "bg-gray-200 text-gray-500"
+                          : "bg-gray-100 text-gray-400"
                       }`}
                     >
                       <FiTruck className="h-4 w-4" />
@@ -289,17 +326,22 @@ const OrderDetails = () => {
                         )}
                     </div>
                   </div>
-                </div>
+                </motion.div>
 
                 {/* Delivered */}
-                <div className="relative">
+                <motion.div 
+                  initial={{ opacity: 0, x: -10 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ duration: 0.3, delay: 0.6 }}
+                  className="relative"
+                >
                   <div className="flex items-center">
                     <div
                       className={`flex-shrink-0 h-8 w-8 rounded-full flex items-center justify-center 
                       ${
                         order.status.toLowerCase() === "delivered"
                           ? "bg-indigo-500 text-white"
-                          : "bg-gray-200 text-gray-500"
+                          : "bg-gray-100 text-gray-400"
                       }`}
                     >
                       <FiCheckCircle className="h-4 w-4" />
@@ -317,117 +359,141 @@ const OrderDetails = () => {
                         )}
                     </div>
                   </div>
-                </div>
+                </motion.div>
               </div>
             </div>
-          </div>
+          </motion.div>
 
           {/* Order Items */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: 0.3 }}
+            className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden"
+          >
             <div className="px-6 py-4 border-b border-gray-100">
               <h2 className="text-lg font-medium text-gray-900">
                 Order Items ({items.length})
               </h2>
             </div>
-            <div className="divide-y divide-gray-200">
-              {items.map((item) => (
-                <div key={item._id} className="p-6">
-                  <div className="flex flex-col sm:flex-row">
-                    <div className="flex-shrink-0 h-24 w-24 bg-gray-100 rounded-md overflow-hidden">
-                      {item.image ? (
-                        <img
-                          className="h-full w-full object-cover"
-                          src={item.image}
-                          alt={item.name}
-                          loading="lazy"
-                        />
-                      ) : (
-                        <div className="h-full w-full flex items-center justify-center text-gray-400">
-                          <FiPackage size={24} />
-                        </div>
-                      )}
-                    </div>
-                    <div className="mt-4 sm:mt-0 sm:ml-6 flex-1">
-                      <div className="flex flex-col sm:flex-row sm:justify-between">
-                        <div>
-                          <h3 className="text-base font-medium text-gray-900">
-                            <Link
-                              to={`/products/${item.productId}`}
-                              className="hover:text-indigo-600"
-                            >
-                              {item.name}
-                            </Link>
-                          </h3>
-                          <p className="mt-1 text-sm text-gray-500">
-                            {item.variant || "Standard"}
-                          </p>
-                        </div>
-                        <div className="mt-2 sm:mt-0">
-                          <p className="text-base font-medium text-gray-900">
-                            ₹{item.price.toFixed(2)}
-                          </p>
-                        </div>
+            <div className="divide-y divide-gray-100">
+              <AnimatePresence>
+                {items.map((item, index) => (
+                  <motion.div 
+                    key={item._id}
+                    initial={{ opacity: 0, y: 10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ duration: 0.3, delay: index * 0.1 }}
+                    className="p-6"
+                  >
+                    <div className="flex flex-col sm:flex-row">
+                      <div className="flex-shrink-0 h-24 w-24 bg-gray-50 rounded-md overflow-hidden">
+                        {item.image ? (
+                          <img
+                            className="h-full w-full object-cover"
+                            src={item.image}
+                            alt={item.name}
+                            loading="lazy"
+                          />
+                        ) : (
+                          <div className="h-full w-full flex items-center justify-center text-gray-300">
+                            <FiPackage size={24} />
+                          </div>
+                        )}
                       </div>
-                      <div className="mt-4 flex items-center justify-between">
-                        <p className="text-sm text-gray-500">
-                          Qty: {item.quantity}
-                        </p>
-                        <p className="text-sm font-medium text-gray-900">
-                          Subtotal: ₹{(item.price * item.quantity).toFixed(2)}
-                        </p>
-                      </div>
-
-                      {/* Per-item return logic */}
-                      {item.returnRequest?.requested ? (
-                        <div className="mt-3 bg-blue-50 p-3 rounded-md">
-                          <div className="flex items-start">
-                            <FiMessageSquare className="flex-shrink-0 mt-0.5 mr-2 text-blue-500" />
-                            <div>
-                              <p className="text-sm">
-                                <strong>Reason:</strong>{" "}
-                                {item.returnRequest.reason}
-                              </p>
-                              <p className="text-sm mt-1">
-                                <strong>Status:</strong>{" "}
-                                <ReturnStatusBadge
-                                  status={item.returnRequest.status}
-                                />
-                              </p>
-                              <p className="text-sm mt-1">
-                                <strong>Requested on:</strong>{" "}
-                                {new Date(
-                                  item.returnRequest.requestedAt
-                                ).toLocaleDateString()}
-                              </p>
-                            </div>
+                      <div className="mt-4 sm:mt-0 sm:ml-6 flex-1">
+                        <div className="flex flex-col sm:flex-row sm:justify-between">
+                          <div>
+                            <h3 className="text-base font-medium text-gray-900">
+                              <Link
+                                to={`/products/${item.productId}`}
+                                className="hover:text-indigo-600 transition-colors"
+                              >
+                                {item.name}
+                              </Link>
+                            </h3>
+                            <p className="mt-1 text-sm text-gray-500">
+                              {item.variant || "Standard"}
+                            </p>
+                          </div>
+                          <div className="mt-2 sm:mt-0">
+                            <p className="text-base font-medium text-gray-900">
+                              ₹{item.price.toFixed(2)}
+                            </p>
                           </div>
                         </div>
-                      ) : canRequestReturn(item, order.createdAt) ? (
-                        <button
-                          onClick={() =>
-                            handleReturnRequest(order._id, item._id)
-                          }
-                          disabled={
-                            returnLoading &&
+                        <div className="mt-4 flex items-center justify-between">
+                          <p className="text-sm text-gray-500">
+                            Qty: {item.quantity}
+                          </p>
+                          <p className="text-sm font-medium text-gray-900">
+                            Subtotal: ₹{(item.price * item.quantity).toFixed(2)}
+                          </p>
+                        </div>
+
+                        {/* Per-item return logic */}
+                        {item.returnRequest?.requested ? (
+                          <motion.div 
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: "auto" }}
+                            className="mt-3 bg-blue-50 p-3 rounded-md"
+                          >
+                            <div className="flex items-start">
+                              <FiMessageSquare className="flex-shrink-0 mt-0.5 mr-2 text-blue-500" />
+                              <div>
+                                <p className="text-sm">
+                                  <strong>Reason:</strong>{" "}
+                                  {item.returnRequest.reason}
+                                </p>
+                                <p className="text-sm mt-1">
+                                  <strong>Status:</strong>{" "}
+                                  <ReturnStatusBadge
+                                    status={item.returnRequest.status}
+                                  />
+                                </p>
+                                <p className="text-sm mt-1">
+                                  <strong>Requested on:</strong>{" "}
+                                  {new Date(
+                                    item.returnRequest.requestedAt
+                                  ).toLocaleDateString()}
+                                </p>
+                              </div>
+                            </div>
+                          </motion.div>
+                        ) : canRequestReturn(item, order.createdAt) ? (
+                          <motion.button
+                            whileHover={{ scale: 1.02 }}
+                            whileTap={{ scale: 0.98 }}
+                            onClick={() =>
+                              handleReturnRequest(order._id, item._id)
+                            }
+                            disabled={
+                              returnLoading &&
+                              activeReturnOrder === `${order._id}-${item._id}`
+                            }
+                            className="mt-3 px-3 py-1 bg-green-500 text-white text-sm rounded-md hover:bg-green-600 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                          >
+                            {returnLoading &&
                             activeReturnOrder === `${order._id}-${item._id}`
-                          }
-                          className="mt-3 px-3 py-1 bg-green-600 text-white text-sm rounded-md hover:bg-green-700 transition-colors duration-200 disabled:opacity-50 disabled:cursor-not-allowed"
-                        >
-                          {returnLoading &&
-                          activeReturnOrder === `${order._id}-${item._id}`
-                            ? "Processing..."
-                            : "Request Return"}
-                        </button>
-                      ) : null}
+                              ? "Processing..."
+                              : "Request Return"}
+                          </motion.button>
+                        ) : null}
+                      </div>
                     </div>
-                  </div>
-                </div>
-              ))}
+                  </motion.div>
+                ))}
+              </AnimatePresence>
             </div>
-          </div>
+          </motion.div>
 
           {/* Need Help Section */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: 0.4 }}
+            className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden"
+          >
             <div className="px-6 py-4 border-b border-gray-100">
               <h2 className="text-lg font-medium text-gray-900">Need Help?</h2>
             </div>
@@ -448,7 +514,7 @@ const OrderDetails = () => {
                   <div className="mt-3">
                     <a
                       href="mailto:support@example.com"
-                      className="text-indigo-600 hover:text-indigo-800 text-sm font-medium"
+                      className="text-indigo-600 hover:text-indigo-800 text-sm font-medium transition-colors"
                     >
                       Contact Support
                     </a>
@@ -456,13 +522,18 @@ const OrderDetails = () => {
                 </div>
               </div>
             </div>
-          </div>
+          </motion.div>
         </div>
 
         {/* Order Summary */}
         <div className="space-y-6">
           {/* Delivery Address */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: 0.2 }}
+            className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden"
+          >
             <div className="px-6 py-4 border-b border-gray-100">
               <h2 className="text-lg font-medium text-gray-900 flex items-center">
                 <FiMapPin className="mr-2 text-indigo-500" />
@@ -490,10 +561,15 @@ const OrderDetails = () => {
                 </p>
               </div>
             </div>
-          </div>
+          </motion.div>
 
           {/* Payment Method */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: 0.3 }}
+            className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden"
+          >
             <div className="px-6 py-4 border-b border-gray-100">
               <h2 className="text-lg font-medium text-gray-900 flex items-center">
                 <FiCreditCard className="mr-2 text-indigo-500" />
@@ -502,7 +578,7 @@ const OrderDetails = () => {
             </div>
             <div className="p-6">
               <div className="flex items-center">
-                <div className="flex-shrink-0 h-10 w-10 bg-gray-100 rounded-full flex items-center justify-center">
+                <div className="flex-shrink-0 h-10 w-10 bg-gray-50 rounded-full flex items-center justify-center">
                   <FiCreditCard className="text-gray-500" />
                 </div>
                 <div className="ml-4">
@@ -516,15 +592,15 @@ const OrderDetails = () => {
                   )}
                 </div>
               </div>
-              <div className="mt-4 pt-4 border-t border-gray-200">
+              <div className="mt-4 pt-4 border-t border-gray-100">
                 <p className="text-sm text-gray-600">
                   <span className="font-medium">Payment Status:</span>{" "}
                   <span
                     className={`inline-flex items-center px-2 py-0.5 rounded text-xs font-medium 
                     ${
                       order.paymentStatus === "paid"
-                        ? "bg-green-100 text-green-800"
-                        : "bg-yellow-100 text-yellow-800"
+                        ? "bg-green-100 text-green-700"
+                        : "bg-yellow-100 text-yellow-700"
                     }`}
                   >
                     {order.paymentStatus === "paid" ? "Paid" : "Pending"}
@@ -532,10 +608,15 @@ const OrderDetails = () => {
                 </p>
               </div>
             </div>
-          </div>
+          </motion.div>
 
           {/* Order Summary */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: 0.4 }}
+            className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden"
+          >
             <div className="px-6 py-4 border-b border-gray-100">
               <h2 className="text-lg font-medium text-gray-900 flex items-center">
                 <FiDollarSign className="mr-2 text-indigo-500" />
@@ -562,7 +643,7 @@ const OrderDetails = () => {
                   <p className="text-gray-600">Tax</p>
                   <p className="text-gray-900 font-medium">₹{tax.toFixed(2)}</p>
                 </div>
-                <div className="border-t border-gray-200 pt-3 flex justify-between">
+                <div className="border-t border-gray-100 pt-3 flex justify-between">
                   <p className="text-gray-900 font-medium">Total</p>
                   <p className="text-gray-900 font-bold">
                     ₹{grandTotal.toFixed(2)}
@@ -570,10 +651,15 @@ const OrderDetails = () => {
                 </div>
               </div>
             </div>
-          </div>
+          </motion.div>
 
           {/* Order Actions */}
-          <div className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3, delay: 0.5 }}
+            className="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden"
+          >
             <div className="px-6 py-4 border-b border-gray-100">
               <h2 className="text-lg font-medium text-gray-900">
                 Order Actions
@@ -581,23 +667,35 @@ const OrderDetails = () => {
             </div>
             <div className="p-6">
               <div className="space-y-3">
-                <button className="w-full flex items-center justify-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+                <motion.button 
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="w-full flex items-center justify-center px-4 py-2 border border-gray-200 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors"
+                >
                   <FiShoppingBag className="mr-2" />
                   Buy Again
-                </button>
-                <button className="w-full flex items-center justify-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+                </motion.button>
+                <motion.button 
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="w-full flex items-center justify-center px-4 py-2 border border-gray-200 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors"
+                >
                   <FiMessageSquare className="mr-2" />
                   Leave Feedback
-                </button>
+                </motion.button>
                 {order.status.toLowerCase() === "delivered" && (
-                  <button className="w-full flex items-center justify-center px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50">
+                  <motion.button 
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    className="w-full flex items-center justify-center px-4 py-2 border border-gray-200 rounded-md text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 transition-colors"
+                  >
                     <FiCheckCircle className="mr-2" />
                     Track Package
-                  </button>
+                  </motion.button>
                 )}
               </div>
             </div>
-          </div>
+          </motion.div>
         </div>
       </div>
     </div>
@@ -612,29 +710,33 @@ const ReturnStatusBadge = ({ status }) => {
 
   switch (status.toLowerCase()) {
     case "approved":
-      color = "bg-green-100 text-green-800";
+      color = "bg-green-100 text-green-700";
       icon = <FiCheckCircle className="mr-1" />;
       break;
     case "rejected":
-      color = "bg-red-100 text-red-800";
+      color = "bg-red-100 text-red-700";
       icon = <FiXCircle className="mr-1" />;
       break;
     case "processing":
-      color = "bg-blue-100 text-blue-800";
+      color = "bg-blue-100 text-blue-700";
       icon = <FiRefreshCw className="mr-1" />;
       break;
     case "pending":
     default:
-      color = "bg-yellow-100 text-yellow-800";
+      color = "bg-yellow-100 text-yellow-700";
       icon = <FiClock className="mr-1" />;
       break;
   }
 
   return (
-    <span className={`${base} ${color}`}>
+    <motion.span 
+      initial={{ scale: 0.9 }}
+      animate={{ scale: 1 }}
+      className={`${base} ${color}`}
+    >
       {icon}
       {status.charAt(0).toUpperCase() + status.slice(1)}
-    </span>
+    </motion.span>
   );
 };
 
